@@ -34,7 +34,6 @@ defmodule CampusChatWeb.RoomChannel do
   # by sending replies to requests from the client
   @impl true
   def handle_in("ping", payload, socket) do
-    IO.puts("pong")
     {:reply, {:ok, payload}, socket}
   end
 
