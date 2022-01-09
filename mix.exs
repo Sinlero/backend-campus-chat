@@ -53,11 +53,12 @@ defmodule CampusChat.MixProject do
   #
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
+    repo = "CampusChat.Repo"
     [
       setup: ["deps.get", "ecto.setup"],
-      "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
-      "ecto.reset": ["ecto.drop", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"]
+      "ecto.setup": ["ecto.create -r #{repo}", "ecto.migrate -r #{repo}", "run priv/repo/seeds.exs"],
+      "ecto.reset": ["ecto.drop -r #{repo}", "ecto.setup -r #{repo}"],
+      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test --color"]
     ]
   end
 end
