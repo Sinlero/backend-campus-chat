@@ -7,9 +7,19 @@ import Config
 # Run `mix help test` for more information.
 config :campus_chat, CampusChat.Repo,
   username: "postgres",
-  password: "postgres",
+  password: "root",
   database: "campus_chat_test#{System.get_env("MIX_TEST_PARTITION")}",
   hostname: "localhost",
+  show_sensitive_data_on_connection_error: true,
+  pool: Ecto.Adapters.SQL.Sandbox,
+  pool_size: 10
+
+config :campus_chat, CampusChat.CampusRepo,
+  username: "postgres",
+  password: "root",
+  database: "campus",
+  hostname: "localhost",
+  show_sensitive_data_on_connection_error: true,
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: 10
 
