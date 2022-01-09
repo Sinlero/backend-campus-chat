@@ -10,6 +10,7 @@ defmodule CampusChat.Application do
     children = [
       # Start the Ecto repository
       CampusChat.Repo,
+      CampusChat.CampusRepo,
       # Start the Telemetry supervisor
       CampusChatWeb.Telemetry,
       # Start the PubSub system
