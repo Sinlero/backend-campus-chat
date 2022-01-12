@@ -11,9 +11,9 @@ defmodule CampusChat.InsertQueryTest do
       text: "Test Text",
       test_field: "string"
     }
-    case {_result, _struct} = Repo.insert(msg) do
+    case Repo.insert(msg) do
       {:ok, _struct}    -> assert true
-      {:error, _struct} -> assert false
+      {:error, _changeset} -> assert false
     end
   end
 end
