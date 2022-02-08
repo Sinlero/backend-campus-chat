@@ -3,7 +3,7 @@ defmodule CampusChat.User do
   import Ecto.Changeset
 
   @primary_key{:id, :id, autogenerate: false}
-  embedded_schema do
+  schema "users" do
     field :name,        :string
     field :surname,     :string
     field :patronymic,  :string
@@ -12,6 +12,7 @@ defmodule CampusChat.User do
     field :description, :string
     field :course,      :integer
     field :group_name,  :string
+    many_to_many :categories, CampusChat.Category, join_through: "users_categories"
   end
 
   @doc """
