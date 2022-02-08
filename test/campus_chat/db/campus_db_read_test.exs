@@ -3,6 +3,7 @@ defmodule CampusChat.CampusDbReadTest do
 
   alias CampusChat.CampusRepo
   alias CampusChat.User
+  alias CampusChat.Category
   alias CampusChat.CampusQuery
 
   @valid_user %{
@@ -45,6 +46,25 @@ defmodule CampusChat.CampusDbReadTest do
     course = 4
     group = "А"
     assert [] != CampusQuery.getUsersByGroup(category_id, course, group)
+  end
+
+  test "get user by id (with schema)" do
+    user = CampusRepo.get(User, @valid_user.id)
+    IO.inspect(user)
+  end
+
+  test "get all categories (with schema)" do
+    query = from category in Category,
+            select: category
+    assert [] != CampusRepo.all(query)
+    # |> IO.inspect()
+  end
+
+  test "get category by id with users (with schema)" do
+    category_id = 8
+    CampusRepo.get(Category, category_id)
+    |> CampusRepo.preload([:users])
+    |> IO.inspect()
   end
 
 end
