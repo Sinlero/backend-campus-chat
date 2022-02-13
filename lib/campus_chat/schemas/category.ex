@@ -9,8 +9,8 @@ defmodule CampusChat.Category do
     many_to_many :users, CampusChat.User, join_through: "users_categories"
   end
 
-  def changeset(user, attrs) do
-    user
+  def changeset(category, attrs) do
+    category
     |> cast(attrs, [:name, :type, :remote_id])
     |> validate_required([:name, :type])
   end
