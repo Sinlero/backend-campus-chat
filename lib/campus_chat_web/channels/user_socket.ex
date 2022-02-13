@@ -20,6 +20,13 @@ defmodule CampusChatWeb.UserSocket do
   # for futher details.
 
 
+  def connect(%{"token" => token}, socket, _connect_info) do
+    case Phoenix.Token.verify(socket, "user socket", token, max_age: 1209600) do
+      {:ok, user_id} -> {:ok, assign(socket, :current_user, user_id)}
+      {:error, _reason} -> :error
+    end
+  end
+
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After
   # verification, you can put default assigns into
