@@ -1,21 +1,18 @@
 defmodule CampusChatWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :campus_chat
 
-
-  socket "/socket", CampusChatWeb.UserSocket,
-    websocket: true,
-    longpoll: false
-
-
-
   # The session will be stored in the cookie and signed,
   # this means its contents can be read but not tampered with.
   # Set :encryption_salt if you would also like to encrypt it.
   @session_options [
     store: :cookie,
-    key: "_campus_chat_key",
+    key: "campus_chat_key",
     signing_salt: "vzdaEL79"
   ]
+
+  socket "/socket", CampusChatWeb.UserSocket,
+  websocket: [connect_info: [session: @session_options]],
+  longpoll: false
 
   socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
 
@@ -51,5 +48,6 @@ defmodule CampusChatWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
+  plug CORSPlug
   plug CampusChatWeb.Router
 end
