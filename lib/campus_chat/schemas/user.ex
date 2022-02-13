@@ -15,16 +15,6 @@ defmodule CampusChat.User do
     many_to_many :categories, CampusChat.Category, join_through: "users_categories"
   end
 
-  @doc """
-  Create user map
-  """
-  @spec new(tuple) :: struct()
-  def new(attrs) do
-    fields = [:id, :name, :surname, :patronymic, :login, :password, :description, :course, :group_name]
-    values = Tuple.to_list(attrs)
-    Enum.zip(fields, values) |> Enum.into(%{})
-  end
-
     @doc false
     def changeset(user, attrs) do
       user
