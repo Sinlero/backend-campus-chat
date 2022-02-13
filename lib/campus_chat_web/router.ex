@@ -1,18 +1,34 @@
 defmodule CampusChatWeb.Router do
   use CampusChatWeb, :router
 
+  import CampusChat.UserAuth
+
   pipeline :api do
     plug :accepts, ["json"]
+    plug :fetch_session
+    # plug :fetch_live_flash
+    # plug :protect_from_forge
+    plug :put_secure_browser_headers
+    plug :fetch_current_user
+    plug :put_user_token
   end
 
   scope "/api", CampusChatWeb do
     pipe_through :api
+    post   "/login",  SessionController, :create
+    delete "/login",  SessionController, :delete
+    get    "/echo",   SessionController, :echo_me
+    get    "/token",  SessionController, :get_token
   end
 
-  scope "/", CampusChatWeb do
-    get "/", DefaultController, :default
+  defp put_user_token(conn, _) do
+    if current_user = conn.assigns[:current_user] do
+      token = Phoenix.Token.sign(conn, "user socket", current_user.id)
+      assign(conn, :user_token, token)
+    else
+      conn
+    end
   end
-
   # Enables LiveDashboard only for development
   #
   # If you want to use the LiveDashboard in production, you should put
