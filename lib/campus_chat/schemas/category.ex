@@ -14,4 +14,12 @@ defmodule CampusChat.Category do
     |> cast(attrs, [:name, :type, :remote_id])
     |> validate_required([:name, :type])
   end
+
+  def transfer_cast(category) do
+    %{
+      id: category.id,
+      name: category.name,
+      type: category.type
+    }
+  end
 end
