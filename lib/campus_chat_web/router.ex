@@ -6,8 +6,6 @@ defmodule CampusChatWeb.Router do
   pipeline :api do
     plug :accepts, ["json"]
     plug :fetch_session
-    # plug :fetch_live_flash
-    # plug :protect_from_forge
     plug :put_secure_browser_headers
     plug :fetch_current_user
     plug :put_user_token
@@ -19,6 +17,11 @@ defmodule CampusChatWeb.Router do
     delete "/login",  SessionController, :delete
     get    "/echo",   SessionController, :echo_me
     get    "/token",  SessionController, :get_token
+  end
+
+  scope "/api", CampusChatWeb do
+    pipe_through [:api, :require_authenticated_user]
+    get "/categories", SearchController, :categories
   end
 
   defp put_user_token(conn, _) do
