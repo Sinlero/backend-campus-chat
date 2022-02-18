@@ -157,9 +157,8 @@ defmodule CampusChat.UserAuth do
       conn
     else
       conn
-      |> put_flash(:error, "You must log in to access this page.")
       |> maybe_store_return_to()
-      |> redirect(to: "/login")
+      |> send_resp(401, "UNAUTHORIZED")
       |> halt()
     end
   end
