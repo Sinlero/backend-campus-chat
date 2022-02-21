@@ -3,8 +3,12 @@ defmodule CampusChatWeb.SessionControllerTest do
 
   import CampusChat.Fixtures
 
+  def logined_session() do
+    post(build_conn(), "/api/login", [login: valid_user().login, password: valid_user().password])
+  end
+
   test "login" do
-    conn = post(build_conn(), "/api/login", [login: valid_user().login, password: valid_user().password])
+    conn = logined_session()
     assert conn.resp_body =~ "loggined"
   end
 
@@ -14,13 +18,13 @@ defmodule CampusChatWeb.SessionControllerTest do
   end
 
   test "cookie value" do
-    conn = post(build_conn(), "/api/login", [login: valid_user().login, password: valid_user().password])
+    conn = logined_session()
     %{"campus_chat_key" => cookie_value} = conn.cookies
     assert cookie_value != nil
   end
 
   test "get token" do
-    conn = post(build_conn(), "/api/login", [login: valid_user().login, password: valid_user().password])
+    conn = logined_session()
     |> get("/api/token")
     assert conn.resp_body =~ "SFMyNTY"
   end
@@ -28,7 +32,7 @@ defmodule CampusChatWeb.SessionControllerTest do
   test "token session" do
     alias CampusChat.UserAuth
     token_value =
-    post(build_conn(), "/api/login", [login: valid_user().login, password: valid_user().password])
+    logined_session()
     |> UserAuth.fetch_current_user("params")
     |> get_session(:user_token)
     assert valid_user().id == UserAuth.get_user_by_session_token(token_value).id
