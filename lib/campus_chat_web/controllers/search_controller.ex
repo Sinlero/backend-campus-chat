@@ -4,7 +4,7 @@ defmodule CampusChatWeb.SearchController do
   alias CampusChat.SearchService
 
   def categories(conn, _params) do
-    json(conn, SearchService.getAllCategories())
+    json(conn, SearchService.get_all_categories())
   end
 
 end
