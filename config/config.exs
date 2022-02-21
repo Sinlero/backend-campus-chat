@@ -8,7 +8,8 @@
 import Config
 
 config :campus_chat,
-  ecto_repos: [CampusChat.Repo, CampusChat.CampusRepo]
+  ecto_repos: [CampusChat.Repo, CampusChat.CampusRepo],
+  unused_categories: ["Тестовый факультет", "Тестовое подразделение"]
 
 # Configures the endpoint
 config :campus_chat, CampusChatWeb.Endpoint,
