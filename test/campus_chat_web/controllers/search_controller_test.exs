@@ -3,8 +3,6 @@ defmodule CampusChatWeb.SearchControllerTest do
 
   import CampusChat.Fixtures
 
-  alias CampusChatWeb.SearchController
-
   def logined_session() do
     post(build_conn(), "/api/login", [login: valid_user().login, password: valid_user().password])
   end
