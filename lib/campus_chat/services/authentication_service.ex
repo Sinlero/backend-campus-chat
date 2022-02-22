@@ -1,4 +1,4 @@
-defmodule CampusChat.UserAuth do
+defmodule CampusChat.AuthenticationService do
   import Plug.Conn
   import Phoenix.Controller
 

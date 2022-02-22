@@ -30,12 +30,12 @@ defmodule CampusChatWeb.SessionControllerTest do
   end
 
   test "token session" do
-    alias CampusChat.UserAuth
+    alias CampusChat.AuthenticationService
     token_value =
     logined_session()
-    |> UserAuth.fetch_current_user("params")
+    |> AuthenticationService.fetch_current_user("params")
     |> get_session(:user_token)
-    assert valid_user().id == UserAuth.get_user_by_session_token(token_value).id
+    assert valid_user().id == AuthenticationService.get_user_by_session_token(token_value).id
   end
 
 end

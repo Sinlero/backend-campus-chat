@@ -1,7 +1,7 @@
 defmodule CampusChatWeb.Router do
   use CampusChatWeb, :router
 
-  import CampusChat.UserAuth
+  import CampusChat.AuthenticationService
 
   pipeline :api do
     plug :accepts, ["json"]

@@ -2,12 +2,12 @@ defmodule CampusChatWeb.SessionController do
   use CampusChatWeb, :controller
 
   alias CampusChat.CampusQuery
-  alias CampusChat.UserAuth
+  alias CampusChat.AuthenticationService
 
   def create(conn, %{"login" => login, "password" => password}) do
     user_params = %{login: login, password: password}
     if user = CampusQuery.get_user_by_login_and_password(login, password) do
-      UserAuth.log_in_user(conn, user, user_params)
+      AuthenticationService.log_in_user(conn, user, user_params)
     else
       send_resp(conn, 401, "UNAUTHORIZED")
       |> halt()
@@ -26,7 +26,7 @@ defmodule CampusChatWeb.SessionController do
 
   def delete(conn, _params) do
     conn
-    |> UserAuth.log_out_user()
+    |> AuthenticationService.log_out_user()
   end
 
 end
