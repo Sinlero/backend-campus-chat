@@ -12,6 +12,10 @@ defmodule CampusChat.User do
     field :description, :string
     field :course,      :integer
     field :group_name,  :string
+    field :active,      :boolean
+    field :archival,    :boolean
+    field :valid_photo, :boolean
+    field :photo,       :string
     many_to_many :categories, CampusChat.Category, join_through: "users_categories"
   end
 
