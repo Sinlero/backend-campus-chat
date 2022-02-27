@@ -53,11 +53,11 @@ defmodule CampusChat.CampusQuery do
   select * from users
     join users_categories on users.id = users_categories.user_id
         join category  on users_categories.category_id = category.id
-  where category_id = 8 and course = 4 and group_name = 'А'
+  where category_id = 8 and course = 4 and group_name = 'А' and users.archival = false
   """
   def get_users_by_group(category_id, course, group) do
     CampusRepo.get(Category, category_id)
-    |> CampusRepo.preload([users: from(u in User, where: u.course == ^course and u.group_name == ^group)])
+    |> CampusRepo.preload([users: from(u in User, where: u.course == ^course and u.group_name == ^group and u.archival == false)])
   end
 
   @doc """
@@ -65,14 +65,14 @@ defmodule CampusChat.CampusQuery do
   from users
     join users_categories on users.id = users_categories.user_id
         join category  on users_categories.category_id = category.id
-  where category_id = 8
+  where category_id = 8 and users.archival = false
   group by course, group_name
   order by group_name, course
   """
   def get_list_of_groups_and_courses(category_id) do
     query = from category in Category,
             join: user in assoc(category, :users),
-            where: category.id == ^category_id,
+            where: category.id == ^category_id and user.archival == false,
             group_by: [user.course, user.group_name],
             order_by: [user.course, user.group_name],
             select:   {user.course, user.group_name, count(user.course)}
