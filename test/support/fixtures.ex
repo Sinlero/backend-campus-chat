@@ -1,8 +1,8 @@
 defmodule CampusChat.Fixtures do
 
   @category_id 8
-  @count_students_in_4A 16
-  @count_groups_in_FMF 22
+  @count_students_in_4A 15
+  @count_groups_in_FMF 18
 
   @valid_user %{
     course: 4,
