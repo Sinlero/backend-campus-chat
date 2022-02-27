@@ -21,7 +21,8 @@ defmodule CampusChatWeb.Router do
 
   scope "/api", CampusChatWeb do
     pipe_through [:api, :require_authenticated_user]
-    get "/categories", SearchController, :categories
+    get "/categories",   SearchController, :categories
+    get "/category/:id", SearchController, :groups
   end
 
   defp put_user_token(conn, _) do
