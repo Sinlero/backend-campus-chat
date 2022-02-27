@@ -7,4 +7,8 @@ defmodule CampusChatWeb.SearchController do
     json(conn, SearchService.get_all_categories())
   end
 
+  def groups(conn, %{"id" => category_id}) do
+    json(conn, SearchService.get_groups(category_id))
+  end
+
 end
