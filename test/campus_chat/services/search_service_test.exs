@@ -1,6 +1,8 @@
 defmodule CampusChat.SearchServiceTest do
   use CampusChat.DataCase
 
+  import CampusChat.Fixtures
+
   alias CampusChat.ResponseFormatter
   alias CampusChat.CampusQuery
   alias CampusChat.Category
@@ -14,5 +16,8 @@ defmodule CampusChat.SearchServiceTest do
     assert Enum.any?(result, fn category -> category in unused end) == false
   end
 
+  test "get list of groups and courses" do
+    assert CampusChat.SearchService.get_groups(valid_category()) |> Enum.count() == valid_count_groups_in_FMF()
+  end
 
 end
