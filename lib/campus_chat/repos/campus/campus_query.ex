@@ -75,7 +75,7 @@ defmodule CampusChat.CampusQuery do
             where: category.id == ^category_id and user.archival == false,
             group_by: [user.course, user.group_name],
             order_by: [user.course, user.group_name],
-            select:   {user.course, user.group_name, count(user.course)}
+            select:   %{course: user.course, group_name: user.group_name, count_students: count(user.course)}
     CampusRepo.all(query)
   end
 
