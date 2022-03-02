@@ -3,6 +3,7 @@ defmodule CampusChat.Fixtures do
   @category_id 8
   @count_students_in_4A 15
   @count_groups_in_FMF 18
+  @count_users_in_mip 8
 
   @valid_user %{
     course: 4,
@@ -30,6 +31,10 @@ defmodule CampusChat.Fixtures do
 
   def valid_count_groups_in_FMF() do
     @count_groups_in_FMF
+  end
+
+  def valid_count_users_in_mip() do
+    @count_users_in_mip
   end
 
 end
