@@ -20,4 +20,12 @@ defmodule CampusChat.SearchService do
     end
   end
 
+  def get_users(category_id, course, group) do
+    CampusQuery.get_users_by_group(category_id, course, group).users
+  end
+
+  def get_users_by_category(category_id) do
+    CampusQuery.get_users_by_category(category_id).users
+  end
+
 end
