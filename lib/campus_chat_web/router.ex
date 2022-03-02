@@ -3,6 +3,8 @@ defmodule CampusChatWeb.Router do
 
   import CampusChat.AuthenticationService
 
+  api_prefix = Application.get_env(:campus_chat, :api_prefix)
+
   pipeline :api do
     plug :accepts, ["json"]
     plug :fetch_session
@@ -11,7 +13,7 @@ defmodule CampusChatWeb.Router do
     plug :put_user_token
   end
 
-  scope "/api", CampusChatWeb do
+  scope api_prefix, CampusChatWeb do
     pipe_through :api
     post   "/login",  SessionController, :create
     delete "/login",  SessionController, :delete
@@ -19,10 +21,12 @@ defmodule CampusChatWeb.Router do
     get    "/token",  SessionController, :get_token
   end
 
-  scope "/api", CampusChatWeb do
+  scope api_prefix, CampusChatWeb do
     pipe_through [:api, :require_authenticated_user]
-    get "/categories",   SearchController, :categories
-    get "/category/:id", SearchController, :groups
+    get "/categories",                                     SearchController, :categories
+    get "/category/:id",                                   SearchController, :groups
+    get "/users/category/:id/course/:course/group/:group", SearchController, :users_of_group_and_course
+    get "/users/category/:id",                             SearchController, :users_of_category
   end
 
   defp put_user_token(conn, _) do
