@@ -27,7 +27,7 @@ defmodule CampusChat.SearchServiceTest do
   end
 
   test "get users of category" do
-    assert SearchService.get_users_by_category(9) |> Enum.count == valid_count_users_in_mip()
+    assert SearchService.get_users(mip_id()) |> Enum.count == valid_count_users_in_mip()
   end
 
 end
