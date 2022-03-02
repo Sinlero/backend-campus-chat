@@ -3,7 +3,9 @@ defmodule CampusChat.Fixtures do
   @category_id 8
   @count_students_in_4A 15
   @count_groups_in_FMF 18
+  @mip_id 9
   @count_users_in_mip 8
+  @api_prefix Application.get_env(:campus_chat, :api_prefix)
 
   @valid_user %{
     course: 4,
@@ -37,4 +39,11 @@ defmodule CampusChat.Fixtures do
     @count_users_in_mip
   end
 
+  def api_prefix() do
+    @api_prefix
+  end
+
+  def mip_id() do
+    @mip_id
+  end
 end
