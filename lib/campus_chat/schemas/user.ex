@@ -19,6 +19,22 @@ defmodule CampusChat.User do
     many_to_many :categories, CampusChat.Category, join_through: "users_categories"
   end
 
+  def transfer_cast(user) do
+    %{
+      id:          user.id,
+      name:        user.name,
+      surname:     user.surname,
+      patronymic:  user.patronymic,
+      description: user.description,
+      course:      user.course,
+      group_name:  user.group_name,
+      active:      user.active,
+      archival:    user.archival,
+      valid_photo: user.valid_photo,
+      photo:       user.photo
+    }
+  end
+
     @doc false
     def changeset(user, attrs) do
       user
