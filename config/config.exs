@@ -9,7 +9,8 @@ import Config
 
 config :campus_chat,
   ecto_repos: [CampusChat.Repo, CampusChat.CampusRepo],
-  unused_categories: ["Тестовый факультет", "Тестовое подразделение"]
+  unused_categories: ["Тестовый факультет", "Тестовое подразделение"],
+  api_prefix: "/api"
 
 # Configures the endpoint
 config :campus_chat, CampusChatWeb.Endpoint,
