@@ -1,7 +1,9 @@
 defmodule CampusChat.SearchService do
 
+  alias CampusChat.User
   alias CampusChat.Category
   alias CampusChat.CampusQuery
+
   import CampusChat.ResponseFormatter, only: [delete_unused_categories: 1]
 
   def get_all_categories() do
@@ -20,12 +22,14 @@ defmodule CampusChat.SearchService do
     end
   end
 
-  def get_users(category_id, course, group) do
-    CampusQuery.get_users_by_group(category_id, course, group).users
+  def get_users(category_id) do
+    CampusQuery.get_users_by_category(category_id).users
+    |> Enum.map(fn user -> User.transfer_cast(user) end)
   end
 
-  def get_users_by_category(category_id) do
-    CampusQuery.get_users_by_category(category_id).users
+  def get_users(category_id, course, group) do
+    CampusQuery.get_users_by_group(category_id, course, group).users
+    |> Enum.map(fn user -> User.transfer_cast(user) end)
   end
 
 end
