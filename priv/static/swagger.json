@@ -1,0 +1,17 @@
+{
+  "basePath": "/api",
+  "consumes": [
+    "application/json"
+  ],
+  "definitions": {},
+  "host": "192.168.0.102:4000",
+  "info": {
+    "title": "Campus chat",
+    "version": "1.0"
+  },
+  "paths": {},
+  "produces": [
+    "application/json"
+  ],
+  "swagger": "2.0"
+}
