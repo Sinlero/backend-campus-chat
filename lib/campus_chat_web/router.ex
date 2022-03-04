@@ -29,6 +29,23 @@ defmodule CampusChatWeb.Router do
     get "/users/category/:id",                             SearchController, :users_of_category
   end
 
+  scope "#{api_prefix}/swagger" do
+    forward "/", PhoenixSwagger.Plug.SwaggerUI, otp_app: :campus_chat, swagger_file: "swagger.json"
+  end
+
+  def swagger_info() do
+    %{
+      basePath: "/api",
+      info: %{
+        version: "1.0",
+        title: "Campus chat"
+      },
+      consumes: ["application/json"],
+      produces: ["application/json"]
+    }
+  end
+
+  # Putting user token to connection assign
   defp put_user_token(conn, _) do
     if current_user = conn.assigns[:current_user] do
       token = Phoenix.Token.sign(conn, "user socket", current_user.id)
