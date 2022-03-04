@@ -27,6 +27,18 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+# Swagger config
+config :campus_chat, :phoenix_swagger,
+  swagger_files: %{
+    "priv/static/swagger.json" => [
+      router: CampusChatWeb.Router,     # phoenix routes will be converted to swagger paths
+      endpoint: CampusChatWeb.Endpoint  # (optional) endpoint config used to set host, port and https schemes.
+    ]
+  }
+
+config :phoenix_swagger, json_library: Jason
+
+# CORS config
 config :cors_plug,
   origin: ["http://192.168.0.105:8080"],
   credentials: true,
