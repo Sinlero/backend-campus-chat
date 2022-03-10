@@ -3,13 +3,253 @@
   "consumes": [
     "application/json"
   ],
-  "definitions": {},
-  "host": "192.168.0.102:4000",
+  "definitions": {
+    "Categories": {
+      "description": "A collection of Categories",
+      "items": {
+        "$ref": "#/definitions/Category"
+      },
+      "title": "Categories",
+      "type": "array"
+    },
+    "Category": {
+      "description": "Category of users",
+      "example": {
+        "id": 99,
+        "name": "Импортозамещательный факультет",
+        "type": "ENTRANT"
+      },
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "title": "Category",
+      "type": "object"
+    },
+    "Group": {
+      "description": "Group with course",
+      "example": {
+        "count_students": 15,
+        "course": 4,
+        "group_name": "А"
+      },
+      "properties": {
+        "count_students": {
+          "type": "integer"
+        },
+        "course": {
+          "type": "integer"
+        },
+        "group_name": {
+          "type": "string"
+        }
+      },
+      "title": "Group",
+      "type": "object"
+    },
+    "Groups": {
+      "description": "A collection of groups",
+      "items": {
+        "$ref": "#/definitions/Group"
+      },
+      "title": "Groups",
+      "type": "array"
+    },
+    "User": {
+      "description": "A user of the chat",
+      "example": {
+        "active": true,
+        "archival": false,
+        "course": 4,
+        "description": "ФМФ 4А",
+        "group_name": "А",
+        "id": 999,
+        "name": "Иван",
+        "patronymic": "Ивнович",
+        "photo": "base64image",
+        "surname": "Иванов",
+        "valid_photo": true
+      },
+      "properties": {
+        "active": {
+          "type": "boolean"
+        },
+        "archival": {
+          "type": "boolean"
+        },
+        "course": {
+          "type": "integer"
+        },
+        "description": {
+          "type": "string"
+        },
+        "group_name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "patronymic": {
+          "type": "string"
+        },
+        "photo": {
+          "type": "string"
+        },
+        "surname": {
+          "type": "string"
+        },
+        "valid_photo": {
+          "type": "boolean"
+        }
+      },
+      "title": "User",
+      "type": "object"
+    },
+    "Users": {
+      "description": "A collection of Users",
+      "items": {
+        "$ref": "#/definitions/User"
+      },
+      "title": "Users",
+      "type": "array"
+    }
+  },
+  "host": "localhost:4000",
   "info": {
     "title": "Campus chat",
     "version": "1.0"
   },
-  "paths": {},
+  "paths": {
+    "/categories": {
+      "get": {
+        "description": "List of categories",
+        "operationId": "CampusChatWeb.SearchController.categories",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Categories"
+            }
+          }
+        },
+        "summary": "",
+        "tags": [
+          "Search"
+        ]
+      }
+    },
+    "/category/{id}": {
+      "get": {
+        "description": "List of groups with course",
+        "operationId": "CampusChatWeb.SearchController.groups",
+        "parameters": [
+          {
+            "description": "category id",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "integer",
+            "x-example": "99"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Groups"
+            }
+          }
+        },
+        "summary": "",
+        "tags": [
+          "Search"
+        ]
+      }
+    },
+    "/users/category/{id}": {
+      "get": {
+        "description": "List of users by selected category",
+        "operationId": "CampusChatWeb.SearchController.users_of_category",
+        "parameters": [
+          {
+            "description": "category id",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "integer",
+            "x-example": "99"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          }
+        },
+        "summary": "",
+        "tags": [
+          "Search"
+        ]
+      }
+    },
+    "/users/category/{id}/course/{course}/group/{group}": {
+      "get": {
+        "description": "List of users by selected category, course and group",
+        "operationId": "CampusChatWeb.SearchController.users_of_group_and_course",
+        "parameters": [
+          {
+            "description": "category id",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "integer",
+            "x-example": "99"
+          },
+          {
+            "description": "course",
+            "in": "path",
+            "name": "course",
+            "required": true,
+            "type": "integer",
+            "x-example": "4"
+          },
+          {
+            "description": "group name",
+            "in": "path",
+            "name": "group",
+            "required": true,
+            "type": "string",
+            "x-example": "А"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          }
+        },
+        "summary": "",
+        "tags": [
+          "Search"
+        ]
+      }
+    }
+  },
   "produces": [
     "application/json"
   ],
