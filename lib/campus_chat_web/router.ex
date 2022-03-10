@@ -3,7 +3,7 @@ defmodule CampusChatWeb.Router do
 
   import CampusChat.AuthenticationService
 
-  api_prefix = Application.get_env(:campus_chat, :api_prefix)
+  @api_prefix Application.get_env(:campus_chat, :api_prefix)
 
   pipeline :api do
     plug :accepts, ["json"]
@@ -13,7 +13,7 @@ defmodule CampusChatWeb.Router do
     plug :put_user_token
   end
 
-  scope api_prefix, CampusChatWeb do
+  scope @api_prefix, CampusChatWeb do
     pipe_through :api
     post   "/login",  SessionController, :create
     delete "/login",  SessionController, :delete
@@ -21,7 +21,7 @@ defmodule CampusChatWeb.Router do
     get    "/token",  SessionController, :get_token
   end
 
-  scope api_prefix, CampusChatWeb do
+  scope @api_prefix, CampusChatWeb do
     pipe_through [:api, :require_authenticated_user]
     get "/categories",                                     SearchController, :categories
     get "/category/:id",                                   SearchController, :groups
@@ -29,13 +29,13 @@ defmodule CampusChatWeb.Router do
     get "/users/category/:id",                             SearchController, :users_of_category
   end
 
-  scope "#{api_prefix}/swagger" do
+  scope "#{@api_prefix}/swagger" do
     forward "/", PhoenixSwagger.Plug.SwaggerUI, otp_app: :campus_chat, swagger_file: "swagger.json"
   end
 
   def swagger_info() do
     %{
-      basePath: "/api",
+      basePath: "#{@api_prefix}",
       info: %{
         version: "1.0",
         title: "Campus chat"
@@ -43,6 +43,10 @@ defmodule CampusChatWeb.Router do
       consumes: ["application/json"],
       produces: ["application/json"]
     }
+  end
+
+  def api_prefix() do
+    @api_prefix
   end
 
   # Putting user token to connection assign
