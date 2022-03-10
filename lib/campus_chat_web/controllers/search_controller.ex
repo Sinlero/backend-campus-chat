@@ -23,17 +23,17 @@ defmodule CampusChatWeb.SearchController do
           photo       :string
         end
         example %{
-          id: 999,
-          name: "Иван",
-          surname: "Иванов",
-          patronymic: "Ивнович",
+          id:           999,
+          name:        "Иван",
+          surname:     "Иванов",
+          patronymic:  "Ивнович",
           description: "ФМФ 4А",
-          course: 4,
-          group_name: "А",
-          active: true,
-          archival: false,
-          valid_photo: true,
-          photo: "base64image"
+          course:       4,
+          group_name:  "А",
+          active:       true,
+          archival:     false,
+          valid_photo:  true,
+          photo:       "base64image"
         }
       end,
       Users: swagger_schema do
@@ -51,7 +51,7 @@ defmodule CampusChatWeb.SearchController do
           type :string
         end
         example %{
-          id: 99,
+          id:    99,
           name: "Импортозамещательный факультет",
           type: "ENTRANT"
         }
@@ -66,13 +66,13 @@ defmodule CampusChatWeb.SearchController do
         title "Group"
         description "Group with course"
         properties do
-          course :integer
-          group_name :string
+          course         :integer
+          group_name     :string
           count_students :integer
         end
         example %{
-          course: 4,
-          group_name: "А",
+          course:         4,
+          group_name:    "А",
           count_students: 15
         }
       end,
