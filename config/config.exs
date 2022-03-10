@@ -14,7 +14,7 @@ config :campus_chat,
 
 # Configures the endpoint
 config :campus_chat, CampusChatWeb.Endpoint,
-  url: [host: "192.168.0.105"],
+  url: [host: "localhost"],
   render_errors: [view: CampusChatWeb.ErrorView, accepts: ~w(json), layout: false],
   pubsub_server: CampusChat.PubSub,
   live_view: [signing_salt: "CpgO8YyJ"]
@@ -40,7 +40,7 @@ config :phoenix_swagger, json_library: Jason
 
 # CORS config
 config :cors_plug,
-  origin: ["http://192.168.0.105:8080"],
+  origin: ["http://localhost:4000", "http://localhost:8080"],
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   headers: [
