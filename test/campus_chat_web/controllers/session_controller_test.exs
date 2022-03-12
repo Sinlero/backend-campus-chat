@@ -4,7 +4,9 @@ defmodule CampusChatWeb.SessionControllerTest do
   import CampusChat.Fixtures
 
   def logined_session() do
-    post(build_conn(), "/api/login", [login: valid_user().login, password: valid_user().password])
+    credentials = Base.encode64("#{valid_user().login}:#{ valid_user().password}")
+    conn = build_conn() |> Plug.Conn.put_req_header("authorization", "Basic #{credentials}")
+    post(conn, "/api/login")
   end
 
   test "login" do
@@ -14,7 +16,7 @@ defmodule CampusChatWeb.SessionControllerTest do
 
   test "wrong login and password" do
     conn = post(build_conn(), "/api/login", [login: "not_exists_login", password: "not_exists_password"])
-    assert conn.resp_body =~ "UNAUTHORIZED"
+    assert conn.resp_body =~ "Forbidden"
   end
 
   test "cookie value" do

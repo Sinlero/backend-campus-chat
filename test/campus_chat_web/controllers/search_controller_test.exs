@@ -4,7 +4,9 @@ defmodule CampusChatWeb.SearchControllerTest do
   import CampusChat.Fixtures
 
   def logined_session() do
-    post(build_conn(), "#{api_prefix()}/login", [login: valid_user().login, password: valid_user().password])
+    credentials = Base.encode64("#{valid_user().login}:#{ valid_user().password}")
+    conn = build_conn() |> Plug.Conn.put_req_header("authorization", "Basic #{credentials}")
+    post(conn, "/api/login")
   end
 
   test "get all categories" do
