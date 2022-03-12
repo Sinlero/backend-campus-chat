@@ -158,7 +158,7 @@ defmodule CampusChat.AuthenticationService do
     else
       conn
       |> maybe_store_return_to()
-      |> send_resp(401, "UNAUTHORIZED")
+      |> CampusChatWeb.SessionController.create(nil)
       |> halt()
     end
   end
