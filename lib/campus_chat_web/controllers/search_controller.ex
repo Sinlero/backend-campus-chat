@@ -3,6 +3,7 @@ defmodule CampusChatWeb.SearchController do
   use PhoenixSwagger
 
   alias CampusChat.SearchService
+  alias CampusChatWeb.SwaggerParameters
 
   def swagger_definitions do
     %{
@@ -89,6 +90,7 @@ defmodule CampusChatWeb.SearchController do
   swagger_path :categories do
     get "/categories"
     description "List of categories"
+    SwaggerParameters.authorization()
     response 200, "OK", Schema.ref(:Categories)
   end
 
@@ -99,11 +101,13 @@ defmodule CampusChatWeb.SearchController do
   swagger_path :groups do
     get "/category/{id}"
     description "List of groups with course"
+    SwaggerParameters.authorization()
     parameters do
       id :path, :integer, "category id", required: true, example: "99"
     end
     response 200, "OK", Schema.ref(:Groups)
   end
+
   def groups(conn, %{"id" => category_id}) do
     json(conn, SearchService.get_groups(category_id))
   end
@@ -111,6 +115,7 @@ defmodule CampusChatWeb.SearchController do
   swagger_path :users_of_category do
     get "/users/category/{id}"
     description "List of users by selected category"
+    SwaggerParameters.authorization()
     parameters do
       id :path, :integer, "category id", required: true, example: "99"
     end
@@ -124,6 +129,7 @@ defmodule CampusChatWeb.SearchController do
   swagger_path :users_of_group_and_course do
     get "/users/category/{id}/course/{course}/group/{group}"
     description "List of users by selected category, course and group"
+    SwaggerParameters.authorization()
     parameters do
       id     :path, :integer, "category id", required: true, example: "99"
       course :path, :integer, "course",      required: true, example: "4"

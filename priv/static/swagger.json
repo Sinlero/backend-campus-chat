@@ -143,6 +143,11 @@
             }
           }
         },
+        "security": [
+          {
+            "credentials": []
+          }
+        ],
         "summary": "",
         "tags": [
           "Search"
@@ -171,9 +176,66 @@
             }
           }
         },
+        "security": [
+          {
+            "credentials": []
+          }
+        ],
         "summary": "",
         "tags": [
           "Search"
+        ]
+      }
+    },
+    "/login": {
+      "delete": {
+        "description": "Logout user",
+        "operationId": "CampusChatWeb.SessionController.delete",
+        "parameters": [],
+        "responses": {},
+        "security": [
+          {
+            "credentials": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "Session"
+        ]
+      },
+      "post": {
+        "description": "Authorization",
+        "operationId": "CampusChatWeb.SessionController.create",
+        "parameters": [
+          {
+            "description": "Campus user login and password",
+            "in": "body",
+            "name": "Credentials",
+            "required": true,
+            "schema": "string"
+          }
+        ],
+        "responses": {},
+        "summary": "",
+        "tags": [
+          "Session"
+        ]
+      }
+    },
+    "/token": {
+      "get": {
+        "description": "Get user token for phoenix channels",
+        "operationId": "CampusChatWeb.SessionController.get_token",
+        "parameters": [],
+        "responses": {},
+        "security": [
+          {
+            "credentials": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "Session"
         ]
       }
     },
@@ -199,6 +261,11 @@
             }
           }
         },
+        "security": [
+          {
+            "credentials": []
+          }
+        ],
         "summary": "",
         "tags": [
           "Search"
@@ -243,6 +310,11 @@
             }
           }
         },
+        "security": [
+          {
+            "credentials": []
+          }
+        ],
         "summary": "",
         "tags": [
           "Search"
@@ -253,5 +325,12 @@
   "produces": [
     "application/json"
   ],
+  "securityDefinitions": {
+    "credentials": {
+      "in": "body",
+      "name": "Authorization",
+      "type": "basic"
+    }
+  },
   "swagger": "2.0"
 }

@@ -18,15 +18,15 @@ defmodule CampusChatWeb.Router do
     post   "/login",  SessionController, :create
     delete "/login",  SessionController, :delete
     get    "/echo",   SessionController, :echo_me
-    get    "/token",  SessionController, :get_token
   end
 
   scope @api_prefix, CampusChatWeb do
     pipe_through [:api, :require_authenticated_user]
-    get "/categories",                                     SearchController, :categories
-    get "/category/:id",                                   SearchController, :groups
-    get "/users/category/:id/course/:course/group/:group", SearchController, :users_of_group_and_course
-    get "/users/category/:id",                             SearchController, :users_of_category
+    get "/token",                                          SessionController, :get_token
+    get "/categories",                                     SearchController,  :categories
+    get "/category/:id",                                   SearchController,  :groups
+    get "/users/category/:id/course/:course/group/:group", SearchController,  :users_of_group_and_course
+    get "/users/category/:id",                             SearchController,  :users_of_category
   end
 
   scope "#{@api_prefix}/swagger" do
@@ -39,6 +39,13 @@ defmodule CampusChatWeb.Router do
       info: %{
         version: "1.0",
         title: "Campus chat"
+      },
+      securityDefinitions: %{
+        credentials: %{
+          type: "basic",
+          in: "body",
+          name: "Authorization"
+        }
       },
       consumes: ["application/json"],
       produces: ["application/json"]
