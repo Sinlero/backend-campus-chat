@@ -6,10 +6,20 @@ defmodule CampusChatWeb.SessionController do
   alias CampusChat.AuthenticationService
   alias CampusChatWeb.SwaggerParameters
 
+  def swagger_definitions do
+    %{
+      Token: swagger_schema do
+        title "Token"
+        description "A token for phoenix channels"
+        property :token, :string, "Token"
+      end
+    }
+  end
+
   swagger_path :create do
     post "/login"
     description "Authorization"
-    parameter("Credentials", :body, :string, "Campus user login and password", required: true)
+    parameter("Authorization", :header, :string, "Basic authorization campus user", required: false)
   end
 
   def create(conn, _params) do
@@ -30,10 +40,11 @@ defmodule CampusChatWeb.SessionController do
     get "/token"
     description "Get user token for phoenix channels"
     SwaggerParameters.authorization()
+    response 200, "success", Schema.ref(:Token)
   end
 
   def get_token(conn, _params) do
-    text(conn, conn.assigns[:user_token])
+    json(conn, %{"token" => conn.assigns[:user_token]})
   end
 
   swagger_path :delete do
