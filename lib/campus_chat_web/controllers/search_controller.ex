@@ -105,11 +105,18 @@ defmodule CampusChatWeb.SearchController do
     parameters do
       id :path, :integer, "category id", required: true, example: "99"
     end
-    response 200, "OK", Schema.ref(:Groups)
+    response 200, "Success", Schema.ref(:Groups)
+    response 204, "Category have no groups"
+    response 404, "Requested category not found"
   end
 
   def groups(conn, %{"id" => category_id}) do
-    json(conn, SearchService.get_groups(category_id))
+    result = SearchService.get_groups(category_id)
+    case result do
+      {:error, _list} -> send_resp(conn, 204, "")                                |> halt()
+      {:ok, []}       -> send_resp(conn, 404, "Category with this id not found") |> halt()
+      {:ok, list}     -> json(conn, list)                                        |> halt()
+    end
   end
 
   swagger_path :users_of_category do
