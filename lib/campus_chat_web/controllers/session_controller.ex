@@ -12,6 +12,7 @@ defmodule CampusChatWeb.SessionController do
         title "Token"
         description "A token for phoenix channels"
         property :token, :string, "Token"
+        example %{"token" => "SFMyNTY.sopksij45dfgsd89sn5jA23s6eSD"}
       end
     }
   end
