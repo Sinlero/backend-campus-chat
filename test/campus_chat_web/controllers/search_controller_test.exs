@@ -15,7 +15,8 @@ defmodule CampusChatWeb.SearchControllerTest do
 
   test "get groups and courses by category" do
     response = logined_session() |> get("#{api_prefix()}/category/#{valid_category()}") |> json_response(200)
-    assert response == CampusChat.SearchService.get_groups(valid_category())
+    {:ok, groups} = CampusChat.SearchService.get_groups(valid_category())
+    assert response == groups
   end
 
   test "get users of group and course" do

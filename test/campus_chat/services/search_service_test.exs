@@ -18,7 +18,8 @@ defmodule CampusChat.SearchServiceTest do
   end
 
   test "get list of groups and courses" do
-    assert SearchService.get_groups(valid_category()) |> Enum.count() == valid_count_groups_in_FMF()
+    {:ok, groups} = SearchService.get_groups(valid_category())
+    assert groups |> Enum.count() == valid_count_groups_in_FMF()
   end
 
   test "get users of group" do
