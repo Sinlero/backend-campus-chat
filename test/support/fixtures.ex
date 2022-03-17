@@ -19,6 +19,8 @@ defmodule CampusChat.Fixtures do
     surname: "Щеголь"
   }
 
+  @base64_credentials Base.encode64("#{@valid_user.login}:#{@valid_user.password}")
+
   def valid_user() do
     @valid_user
   end
@@ -45,5 +47,9 @@ defmodule CampusChat.Fixtures do
 
   def mip_id() do
     @mip_id
+  end
+
+  def base64_credentials do
+    @base64_credentials
   end
 end
