@@ -16,9 +16,9 @@ defmodule CampusChat.SearchService do
     list = CampusQuery.get_list_of_groups_and_courses(category_id)
     non_groups = list |> Enum.count(fn %{"count_students" => _count, "course" => course, "group_name" => _group} -> course == nil end)
     if non_groups > 0 do
-      %{"course" => nil}
+      {:error, list}
     else
-      list
+      {:ok, list}
     end
   end
 
