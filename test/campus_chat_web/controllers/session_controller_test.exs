@@ -4,8 +4,7 @@ defmodule CampusChatWeb.SessionControllerTest do
   import CampusChat.Fixtures
 
   def logined_session() do
-    credentials = Base.encode64("#{valid_user().login}:#{ valid_user().password}")
-    conn = build_conn() |> Plug.Conn.put_req_header("authorization", "Basic #{credentials}")
+    conn = build_conn() |> Plug.Conn.put_req_header("authorization", "Basic #{base64_credentials()}")
     post(conn, "/api/login")
   end
 
