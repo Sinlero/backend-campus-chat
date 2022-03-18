@@ -62,6 +62,20 @@
       "title": "Groups",
       "type": "array"
     },
+    "Token": {
+      "description": "A token for phoenix channels",
+      "example": {
+        "token": "SFMyNTY.sopksij45dfgsd89sn5jA23s6eSD"
+      },
+      "properties": {
+        "token": {
+          "description": "Token",
+          "type": "string"
+        }
+      },
+      "title": "Token",
+      "type": "object"
+    },
     "User": {
       "description": "A user of the chat",
       "example": {
@@ -170,10 +184,16 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success",
             "schema": {
               "$ref": "#/definitions/Groups"
             }
+          },
+          "204": {
+            "description": "Category have no groups"
+          },
+          "404": {
+            "description": "Requested category not found"
           }
         },
         "security": [
@@ -208,11 +228,11 @@
         "operationId": "CampusChatWeb.SessionController.create",
         "parameters": [
           {
-            "description": "Campus user login and password",
-            "in": "body",
-            "name": "Credentials",
-            "required": true,
-            "schema": "string"
+            "description": "Basic authorization campus user",
+            "in": "header",
+            "name": "Authorization",
+            "required": false,
+            "type": "string"
           }
         ],
         "responses": {},
@@ -227,7 +247,14 @@
         "description": "Get user token for phoenix channels",
         "operationId": "CampusChatWeb.SessionController.get_token",
         "parameters": [],
-        "responses": {},
+        "responses": {
+          "200": {
+            "description": "success",
+            "schema": {
+              "$ref": "#/definitions/Token"
+            }
+          }
+        },
         "security": [
           {
             "credentials": []
