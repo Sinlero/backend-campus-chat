@@ -61,7 +61,7 @@ defmodule CampusChat.MixProject do
       setup: ["deps.get", "ecto.setup"],
       "ecto.setup": ["ecto.create -r #{repo}", "ecto.migrate -r #{repo}", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop -r #{repo}", "ecto.setup -r #{repo}"],
-      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test --color"]
+      test: ["ecto.drop -r #{repo}", "ecto.create --quiet", "ecto.migrate --quiet", "test --color"]
     ]
   end
 end
