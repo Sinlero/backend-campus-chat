@@ -11,7 +11,7 @@ defmodule CampusChatWeb.Endpoint do
   ]
 
   socket "/socket", CampusChatWeb.UserSocket,
-  websocket: [connect_info: [session: @session_options]],
+  websocket: true,
   longpoll: false
 
   socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
