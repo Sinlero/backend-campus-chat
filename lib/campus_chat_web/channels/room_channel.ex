@@ -46,9 +46,8 @@ defmodule CampusChatWeb.RoomChannel do
   end
 
   @impl true
-  def handle_in("new_msg", %{"id" => id, "body" => body}, socket) do
-    IO.inspect(socket.assigns)
-    broadcast!(socket, "new_msg", %{id: id, body: body})
+  def handle_in("new_msg", %{"room_id" => room_id, "sender_id" => sender_id, "text" => text}, socket) do
+    broadcast!(socket, "new_msg", %{"room_id" => room_id, "sender_id" => sender_id, "text" => text})
     {:noreply, socket}
   end
 
