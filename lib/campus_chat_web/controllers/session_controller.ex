@@ -45,7 +45,7 @@ defmodule CampusChatWeb.SessionController do
   end
 
   def get_token(conn, _params) do
-    json(conn, %{"token" => conn.assigns[:user_token]})
+    json(conn, %{"token" => conn.assigns[:socket_token]})
   end
 
   swagger_path :delete do
