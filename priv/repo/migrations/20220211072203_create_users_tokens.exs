@@ -3,7 +3,7 @@ defmodule CampusChat.Repo.Migrations.CreateUsersTokens do
 
   def change do
 
-    create table(:users_tokens) do
+    create table("users_tokens") do
       add :user_id, :integer
       add :token, :binary, null: false
       add :context, :string, null: false
