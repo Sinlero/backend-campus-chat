@@ -5,7 +5,7 @@ defmodule CampusChat.Room do
   schema "rooms" do
       field :name, :string
       has_many :messages, CampusChat.Message
-      many_to_many :roles, CampusChat.Role, join_through: "users_rooms_roles"
+      has_many :users, CampusChat.UsersRoomsRoles
   end
 
     @doc false
