@@ -1,6 +1,8 @@
 defmodule CampusChatWeb.RoomChannelTest do
   use CampusChatWeb.ChannelCase
 
+  import CampusChat.Fixtures
+
   setup do
     {:ok, _, socket} =
       CampusChatWeb.UserSocket
@@ -23,5 +25,11 @@ defmodule CampusChatWeb.RoomChannelTest do
   test "broadcasts are pushed to the client", %{socket: socket} do
     broadcast_from! socket, "broadcast", %{"some" => "data"}
     assert_push "broadcast", %{"some" => "data"}
+  end
+
+  test "send message to room:lobby", %{socket: socket} do
+    message = %{"room_id" => 1, "sender_id" => valid_user_id_for_chat_group(), "text" => "Hello world"}
+    push socket, "new_msg", message
+    assert_broadcast "new_msg", ^message
   end
 end
