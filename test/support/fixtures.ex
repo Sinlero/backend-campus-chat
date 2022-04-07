@@ -7,6 +7,9 @@ defmodule CampusChat.Fixtures do
   @count_users_in_mip 8
   @api_prefix Application.get_env(:campus_chat, :api_prefix)
 
+  @valid_dialog_user_id 1991
+  @valid_user_id_for_chat_group 1649
+
   @valid_user %{
     course: 4,
     description: "ФМФ 4А",
@@ -23,6 +26,18 @@ defmodule CampusChat.Fixtures do
 
   def valid_user() do
     @valid_user
+  end
+
+  def valid_dialog_user_id() do
+    @valid_dialog_user_id
+  end
+
+  def valid_user_id_for_chat_group() do
+    @valid_user_id_for_chat_group
+  end
+
+  def valid_ids_for_chat() do
+    [valid_user_id_for_chat_group(), valid_user().id, valid_dialog_user_id()]
   end
 
   def valid_category() do
