@@ -16,6 +16,11 @@ defmodule CampusChat.ChatServiceTest do
     assert valid_ids_for_chat() == saved
   end
 
+  test "create chat group with unexisted user" do
+    {:error, reason} = ChatService.create_chat_group(valid_user_id_for_chat_group(), [-31254 | valid_ids_for_chat()], "QWeRTY")
+    assert reason == "User does not exist"
+  end
+
   test "create dialog two users" do
     {:ok, room} = ChatService.create_dialog(valid_user().id, valid_dialog_user_id())
     room |> Repo.preload(:users)
