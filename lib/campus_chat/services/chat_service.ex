@@ -52,7 +52,7 @@ defmodule CampusChat.ChatService do
 
   def save_message(%{sender_id: sender_id, room_id: room_id, text: text}) do
     with true <- user_exist?(sender_id),
-         room <- Repo.get(Room, room_id),
+         %Room{} = room <- Repo.get(Room, room_id),
          {:ok, message} <- Repo.insert(%Message{room: room, sender_id: sender_id, text: text}) do
            %{
               id:        message.id,
