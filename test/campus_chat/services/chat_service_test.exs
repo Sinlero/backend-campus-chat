@@ -39,6 +39,18 @@ defmodule CampusChat.ChatServiceTest do
     assert message.text == "Hello Alexey"
   end
 
+  test "send message into dialog with unexisted user" do
+    {:ok, room} = ChatService.create_dialog(valid_user().id, valid_dialog_user_id())
+    {:error, reason} = ChatService.save_message(%{sender_id: -123123, room_id: room.id, text: "Hello Alexey"})
+    assert reason == "Sender does not exist"
+  end
+
+  test "send message into dialog with unexisted room" do
+    {:ok, _room} = ChatService.create_dialog(valid_user().id, valid_dialog_user_id())
+    {:error, reason} = ChatService.save_message(%{sender_id: valid_user().id, room_id: -123445, text: "Hello Alexey"})
+    assert reason == "Room does not exist"
+  end
+
   test "send message into chat room" do
     {:ok, room} = create_room()
     message = ChatService.save_message(%{sender_id: valid_user().id, room_id: room.id, text: "Hello All"})
