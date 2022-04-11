@@ -52,7 +52,7 @@ defmodule CampusChat.ChatService do
 
   def save_message(%{sender_id: sender_id, room_id: room_id, text: text}) do
     with true <- user_exist?(sender_id),
-         %Room{} = room <- Repo.get(Room, room_id),
+         {:ok, room} <- room_exists?(room_id),
          {:ok, message} <- Repo.insert(%Message{room: room, sender_id: sender_id, text: text}) do
            %{
               id:        message.id,
@@ -63,32 +63,47 @@ defmodule CampusChat.ChatService do
               time:      message.inserted_at
           }
     else
-      false -> {:error, "Sender does not exist"}
-      nil -> {:error, "Room does not exist"}
+      false -> {:error, "Sender or room does not exist"}
       _ -> Logger.error("Message wasn't saved")
     end
   end
 
   def change_room_name(admin_id, room_id, name) do
-    with true <- user_exist?(admin_id),
-         true <- room_exists?(room_id),
-        {:ok, role} <- ChatQuery.get_authority(admin_id, room_id) do
-          if role.name == "ADMIN" do
-            room = Repo.get(Room, room_id)
+    with {:ok, _admin_id, room, _role} <- check_admin_authority(admin_id, room_id) do
             Repo.update(Ecto.Changeset.change(room, name: name))
-          else
-            {:error, "User does not have admin rights"}
-          end
+    else
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  def add_admin_role(admin_id, new_admins_ids, room_id) do
+    with {:ok, _admin_id, room, role} <- check_admin_authority(admin_id, room_id),
+         true <- users_exists?(new_admins_ids) do
+           Enum.map(new_admins_ids, fn id -> ChatQuery.update_role(id, role, room) end)
+           {:ok, "Roles updated"}
+    else
+      false -> {:error, "User does not exist"}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  defp check_admin_authority(user_id, room_id) do
+    with true <- user_exist?(user_id),
+         {:ok, room} <- room_exists?(room_id),
+         {:ok, role} <- ChatQuery.get_authority(user_id, room.id),
+         {:ok, "ADMIN"} <- Map.fetch(role, :name) do
+           {:ok, user_id, room, role}
     else
       false -> {:error, "User or room does not exist"}
+      {:ok, "USER"} -> {:error, "User have no admin authority"}
       {:error, reason} -> {:error, reason}
     end
   end
 
   defp room_exists?(room_id) do
-    case Repo.get(Room, room_id) do
+    case room = Repo.get(Room, room_id) do
       nil -> false
-      _ -> true
+      _ -> {:ok, room}
     end
   end
 
