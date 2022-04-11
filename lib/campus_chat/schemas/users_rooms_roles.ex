@@ -5,7 +5,7 @@ defmodule CampusChat.UsersRoomsRoles do
   schema "users_rooms_roles" do
     field :user_id, :integer
     belongs_to :room, CampusChat.Room, foreign_key: :room_id
-    belongs_to :role, CampusChat.Role, foreign_key: :role_id
+    belongs_to :role, CampusChat.Role, foreign_key: :role_id, on_replace: :update
   end
 
   def changeset(record, attrs) do
