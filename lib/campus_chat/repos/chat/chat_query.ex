@@ -2,7 +2,17 @@ defmodule CampusChat.ChatQuery do
 
   import Ecto.Query
 
-  alias CampusChat.{Repo, CampusQuery, UsersRoomsRoles, Room, Message}
+  alias CampusChat.{Repo, CampusQuery, UsersRoomsRoles, Room, Message, Role}
+
+  @spec update_role(
+          integer(),
+          %Role{},
+          %Room{}
+        ) :: any
+  def update_role(user_id, role, room) do
+    from(record in UsersRoomsRoles, where: record.user_id == ^user_id and record.room_id == ^room.id)
+    |> Repo.update_all(set: [role_id: role.id])
+  end
 
   def get_rooms_of_user(user_id) do
     from(record in UsersRoomsRoles, where: record.user_id == ^user_id )
