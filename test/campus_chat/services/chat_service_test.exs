@@ -42,13 +42,13 @@ defmodule CampusChat.ChatServiceTest do
   test "send message into dialog with unexisted user" do
     {:ok, room} = ChatService.create_dialog(valid_user().id, valid_dialog_user_id())
     {:error, reason} = ChatService.save_message(%{sender_id: -123123, room_id: room.id, text: "Hello Alexey"})
-    assert reason == "Sender does not exist"
+    assert reason == "Sender or room does not exist"
   end
 
   test "send message into dialog with unexisted room" do
     {:ok, _room} = ChatService.create_dialog(valid_user().id, valid_dialog_user_id())
     {:error, reason} = ChatService.save_message(%{sender_id: valid_user().id, room_id: -123445, text: "Hello Alexey"})
-    assert reason == "Room does not exist"
+    assert reason == "Sender or room does not exist"
   end
 
   test "send message into chat room" do
@@ -82,7 +82,7 @@ defmodule CampusChat.ChatServiceTest do
   test "change room name with no authority user" do
     {:ok, room} = ChatService.create_chat_group(valid_user_id_for_chat_group(), valid_ids_for_chat(), "QWeRTY")
     {:error, reason} = ChatService.change_room_name(valid_user().id, room.id, "CHANGED ROOM NAME")
-    assert reason == "User does not have admin rights"
+    assert reason == "User have no admin authority"
   end
 
   test "change room on unexisted room" do
@@ -95,5 +95,35 @@ defmodule CampusChat.ChatServiceTest do
     {:ok, room} = ChatService.create_chat_group(valid_user_id_for_chat_group(), valid_ids_for_chat(), "QWeRTY")
     {:error, reason} = ChatService.change_room_name(-123123, room.id, "CHANGED ROOM NAME")
     assert reason == "User or room does not exist"
+  end
+
+  test "add admin authorites" do
+    {:ok, room} = create_room()
+    {:ok, result} = ChatService.add_admin_role(valid_user().id, [valid_dialog_user_id(), valid_user_id_for_chat_group()], room.id)
+    assert result == "Roles updated"
+  end
+
+  test "add admin roles with user without authorities" do
+    {:ok, room} = create_room()
+    {:error, result} = ChatService.add_admin_role(valid_dialog_user_id(), [valid_user().id, valid_user_id_for_chat_group()], room.id)
+    assert result == "User have no admin authority"
+  end
+
+  test "add admin authorites to unexisted room" do
+    {:ok, _room} = create_room()
+    {:error, result} = ChatService.add_admin_role(valid_user().id, [valid_dialog_user_id(), valid_user_id_for_chat_group()], -213)
+    assert result == "User or room does not exist"
+  end
+
+  test "add admin roles with unexisted admin user" do
+    {:ok, room} = create_room()
+    {:error, result} = ChatService.add_admin_role(-123, [valid_dialog_user_id(), valid_user_id_for_chat_group()], room.id)
+    assert result == "User or room does not exist"
+  end
+
+  test "add admin roles with unexisted users" do
+    {:ok, room} = create_room()
+    {:error, result} = ChatService.add_admin_role(valid_user().id, [-123, valid_user_id_for_chat_group()], room.id)
+    assert result == "User does not exist"
   end
 end
