@@ -48,7 +48,7 @@ defmodule CampusChat.ChatQuery do
     Enum.map(ids, fn id -> CampusQuery.get_user_by_id(id) end)
   end
 
-  defp get_users_ids_from_room(room) do
+  def get_users_ids_from_room(room) do
     users_list = room |> Repo.preload(:users) |> Map.get(:users)
     Enum.map(users_list, fn user -> user.user_id end)
   end
