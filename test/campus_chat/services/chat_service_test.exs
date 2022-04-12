@@ -9,6 +9,10 @@ defmodule CampusChat.ChatServiceTest do
     ChatService.create_chat_group(valid_user().id, valid_ids_for_chat(), name)
   end
 
+  defp create_room(creator_id, list_ids, name) when is_binary(name) do
+    ChatService.create_chat_group(creator_id, list_ids, name)
+  end
+
   test "create chat group" do
     ids = valid_ids_for_chat()
     {:ok, room} = ChatService.create_chat_group(valid_user_id_for_chat_group(), ids, "LIT")
@@ -126,4 +130,23 @@ defmodule CampusChat.ChatServiceTest do
     {:error, result} = ChatService.add_admin_role(valid_user().id, [-123, valid_user_id_for_chat_group()], room.id)
     assert result == "User does not exist"
   end
+
+  test "add users to group" do
+    {:ok, room} = create_room()
+    added_users_ids = [1899, 1990]
+    {:ok, updated} = ChatService.add_users(valid_user().id, added_users_ids, room.id)
+    room_ids = ChatQuery.get_users_ids_from_room(updated)
+    assert Enum.all?(added_users_ids, fn id -> id in room_ids end) == true
+  end
+
+  test "add users to group (users can be in room already)" do
+    {:ok, room} = create_room()
+    {:ok, updated} = ChatService.add_users(valid_user().id, valid_ids_for_chat(), room.id)
+    uniq? = ChatQuery.get_users_ids_from_room(updated)
+    |> Enum.frequencies
+    |> Enum.map(fn {k,v} ->  if v == 1, do: true, else: false  end)
+    |> Enum.all?()
+    assert uniq? == true
+  end
+
 end
