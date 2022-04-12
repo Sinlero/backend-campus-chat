@@ -36,6 +36,22 @@ defmodule CampusChat.ChatService do
     end
   end
 
+  def add_users(admin_id, list_ids, room_id) when is_integer(admin_id) and is_list(list_ids) and is_integer(room_id) do
+    list_ids = List.delete(list_ids, admin_id)
+    list_ids = Enum.uniq(list_ids)
+    with {:ok, _user_id, room, _role} <- check_admin_authority(admin_id, room_id),
+          true <- users_exists?(list_ids),
+          %Role{} = user_role <- Repo.get_by(Role, name: "USER") do
+            room_users_ids = ChatQuery.get_users_ids_from_room(room)
+            Enum.map(list_ids, fn id -> if Enum.member?(room_users_ids, id) == false, do: Repo.insert(%UsersRoomsRoles{user_id: id, room: room, role: user_role}) end)
+            {:ok, room}
+    else
+      false -> {:error, "User does not exist"}
+      nil -> {:error, "No such role"}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
   def get_chats(user_id) do
     with true <- user_exist?(user_id) do
             ChatQuery.get_rooms_of_user(user_id)
