@@ -13,9 +13,10 @@ defmodule CampusChat.ChatServiceTest do
     ChatService.create_chat_group(creator_id, list_ids, name)
   end
 
+# -------------------------- Chat groups tests ------------------------------------
+
   test "create chat group" do
-    ids = valid_ids_for_chat()
-    {:ok, room} = ChatService.create_chat_group(valid_user_id_for_chat_group(), ids, "LIT")
+    {:ok, room} = ChatService.create_chat_group(valid_user_id_for_chat_group(), valid_ids_for_chat(), "LIT")
     saved = room |> ChatQuery.get_users_from_room() |> Enum.map(fn user -> user.id end)
     assert valid_ids_for_chat() == saved
   end
@@ -24,6 +25,23 @@ defmodule CampusChat.ChatServiceTest do
     {:error, reason} = ChatService.create_chat_group(valid_user_id_for_chat_group(), [-31254 | valid_ids_for_chat()], "QWeRTY")
     assert reason == "User does not exist"
   end
+
+  test "create chat group with wrong creator id type" do
+    {:error, reason} = ChatService.create_chat_group(Integer.to_string(valid_user().id), valid_ids_for_chat(), "QWeRTY")
+    assert reason == "Wrong input data types"
+  end
+
+  test "create chat group with wrong users ids type" do
+    {:error, reason} = ChatService.create_chat_group(valid_user().id, {valid_user_id_for_chat_group(), valid_dialog_user_id()}, "QWeRTY")
+    assert reason == "Wrong input data types"
+  end
+
+  test "create chat group with wrong chat name type" do
+    {:error, reason} = ChatService.create_chat_group(Integer.to_string(valid_user().id), valid_ids_for_chat(), 47234)
+    assert reason == "Wrong input data types"
+  end
+
+  # -------------------------- Dialogs tests ------------------------------------
 
   test "create dialog two users" do
     {:ok, room} = ChatService.create_dialog(valid_user().id, valid_dialog_user_id())
@@ -36,6 +54,13 @@ defmodule CampusChat.ChatServiceTest do
     {:error, reason} = ChatService.create_dialog(-245634, valid_dialog_user_id())
     assert reason == "User does not exists"
   end
+
+  test "create dialog with wrong args type" do
+    {:error, reason} = ChatService.create_dialog(Integer.to_string(valid_user().id), [valid_dialog_user_id()])
+    assert reason == "Wrong input data types"
+  end
+
+  # -------------------------- Save message tests ------------------------------------
 
   test "send message into dialog" do
     {:ok, room} = ChatService.create_dialog(valid_user().id, valid_dialog_user_id())
@@ -61,12 +86,47 @@ defmodule CampusChat.ChatServiceTest do
     assert message.text == "Hello All"
   end
 
+  test "send message with wrong sender id type" do
+    {:ok, room} = create_room()
+    {:error, reason} = ChatService.save_message(%{sender_id: Integer.to_string(valid_user().id), room_id: room.id, text: "Hello All"})
+    assert reason == "Wrong input data types"
+  end
+
+  test "send message with wrong room id type" do
+    {:ok, room} = create_room()
+    {:error, reason} = ChatService.save_message(%{sender_id: valid_user().id, room_id: Integer.to_string(room.id), text: "Hello All"})
+    assert reason == "Wrong input data types"
+  end
+
+  test "send message with wrong text type" do
+    {:ok, room} = create_room()
+    {:error, reason} = ChatService.save_message(%{sender_id: valid_user().id, room_id: room.id, text: 25753768})
+    assert reason == "Wrong input data types"
+  end
+
+  test "send message with multiply wrong types" do
+    {:ok, room} = create_room()
+    {:error, reason} = ChatService.save_message(%{sender_id: Integer.to_string(valid_user().id), room_id: room.id, text: [123, "235", "dfgs"]})
+    assert reason == "Wrong input data types"
+  end
+
+  # -------------------------- Get chats tests ------------------------------------
+
   test "get rooms of user" do
     {:ok, _room} = create_room("ROOM 1")
     {:ok, _room2} = create_room("ROOM 2")
     count_chats = ChatService.get_chats(valid_user().id) |> Enum.count()
     assert count_chats == 2
   end
+
+  test "get rooms of user with wrong user id type" do
+    {:ok, _room} = create_room("ROOM 1")
+    {:ok, _room2} = create_room("ROOM 2")
+    {:error, reason} = ChatService.get_chats(Integer.to_string(valid_user().id))
+    assert reason == "Wrong input data types"
+  end
+
+  # -------------------------- Get messages tests ------------------------------------
 
   test "get messages from room" do
     {:ok, room} = create_room()
@@ -76,6 +136,18 @@ defmodule CampusChat.ChatServiceTest do
     end
     assert ChatService.get_messages(room.id) |> Enum.count() == 30
   end
+
+  test "get messages from room with wrong room id type" do
+    {:ok, room} = create_room()
+    message = %{room_id: room.id, sender_id: valid_user().id, text: "DEFAULT TEXT"}
+    for _i <- 1..100 do
+      ChatService.save_message(message)
+    end
+    {:error, reason} = ChatService.get_messages(Integer.to_string(room.id))
+    assert reason == "Wrong input data types"
+  end
+
+  # -------------------------- Change chat group name tests ------------------------------------
 
   test "change room name" do
     {:ok, room} = ChatService.create_chat_group(valid_user_id_for_chat_group(), valid_ids_for_chat(), "QWeRTY")
@@ -101,27 +173,53 @@ defmodule CampusChat.ChatServiceTest do
     assert reason == "User or room does not exist"
   end
 
+  test "change room name with wrong admin id type" do
+    {:ok, room} = ChatService.create_chat_group(valid_user_id_for_chat_group(), valid_ids_for_chat(), "QWeRTY")
+    {:error, reason} = ChatService.change_room_name(Integer.to_string(valid_user_id_for_chat_group()), room.id, "CHANGED ROOM NAME")
+    assert reason == "Wrong input data types"
+  end
+
+  test "change room name with wrong room id type" do
+    {:ok, room} = ChatService.create_chat_group(valid_user_id_for_chat_group(), valid_ids_for_chat(), "QWeRTY")
+    {:error, reason} = ChatService.change_room_name(valid_user_id_for_chat_group(), Integer.to_string(room.id), "CHANGED ROOM NAME")
+    assert reason == "Wrong input data types"
+  end
+
+  test "change room name with wrong chat name type" do
+    {:ok, room} = ChatService.create_chat_group(valid_user_id_for_chat_group(), valid_ids_for_chat(), "QWeRTY")
+    {:error, reason} = ChatService.change_room_name(valid_user_id_for_chat_group(), room.id, ["Changed", "room", "name"])
+    assert reason == "Wrong input data types"
+  end
+
+  test "change room name with multiply wrong args type" do
+    {:ok, room} = ChatService.create_chat_group(valid_user_id_for_chat_group(), valid_ids_for_chat(), "QWeRTY")
+    {:error, reason} = ChatService.change_room_name(Integer.to_string(valid_user_id_for_chat_group()), Integer.to_string(room.id), 2346)
+    assert reason == "Wrong input data types"
+  end
+
+  # -------------------------- Add admin authorities tests ------------------------------------
+
   test "add admin authorites" do
     {:ok, room} = create_room()
-    {:ok, result} = ChatService.add_admin_role(valid_user().id, [valid_dialog_user_id(), valid_user_id_for_chat_group()], room.id)
+    {:ok, result} = ChatService.add_admin_role(valid_user().id, valid_ids_for_chat(), room.id)
     assert result == "Roles updated"
   end
 
   test "add admin roles with user without authorities" do
     {:ok, room} = create_room()
-    {:error, result} = ChatService.add_admin_role(valid_dialog_user_id(), [valid_user().id, valid_user_id_for_chat_group()], room.id)
+    {:error, result} = ChatService.add_admin_role(valid_dialog_user_id(), valid_ids_for_chat(), room.id)
     assert result == "User have no admin authority"
   end
 
   test "add admin authorites to unexisted room" do
     {:ok, _room} = create_room()
-    {:error, result} = ChatService.add_admin_role(valid_user().id, [valid_dialog_user_id(), valid_user_id_for_chat_group()], -213)
+    {:error, result} = ChatService.add_admin_role(valid_user().id, valid_ids_for_chat(), -213)
     assert result == "User or room does not exist"
   end
 
   test "add admin roles with unexisted admin user" do
     {:ok, room} = create_room()
-    {:error, result} = ChatService.add_admin_role(-123, [valid_dialog_user_id(), valid_user_id_for_chat_group()], room.id)
+    {:error, result} = ChatService.add_admin_role(-123, valid_ids_for_chat(), room.id)
     assert result == "User or room does not exist"
   end
 
@@ -130,6 +228,32 @@ defmodule CampusChat.ChatServiceTest do
     {:error, result} = ChatService.add_admin_role(valid_user().id, [-123, valid_user_id_for_chat_group()], room.id)
     assert result == "User does not exist"
   end
+
+  test "add admin roles with wrong admin id type" do
+    {:ok, room} = create_room()
+    {:error, result} = ChatService.add_admin_role(Integer.to_string(valid_user().id), valid_ids_for_chat(), room.id)
+    assert result == "Wrong input data types"
+  end
+
+  test "add admin roles with wrong room id type" do
+    {:ok, room} = create_room()
+    {:error, result} = ChatService.add_admin_role(valid_user().id, valid_ids_for_chat(), Integer.to_string(room.id))
+    assert result == "Wrong input data types"
+  end
+
+  test "add admin roles with wrong users ids type" do
+    {:ok, room} = create_room()
+    {:error, result} = ChatService.add_admin_role(valid_user().id, {valid_dialog_user_id(), valid_user_id_for_chat_group()}, room.id)
+    assert result == "Wrong input data types"
+  end
+
+  test "add admin roles with multiply wrong args types" do
+    {:ok, room} = create_room()
+    {:error, result} = ChatService.add_admin_role(Integer.to_string(valid_user().id), {valid_dialog_user_id(), valid_user_id_for_chat_group()}, room.id)
+    assert result == "Wrong input data types"
+  end
+
+  # -------------------------- Add users to chat tests ------------------------------------
 
   test "add users to group" do
     {:ok, room} = create_room()
@@ -144,9 +268,33 @@ defmodule CampusChat.ChatServiceTest do
     {:ok, updated} = ChatService.add_users(valid_user().id, valid_ids_for_chat(), room.id)
     uniq? = ChatQuery.get_users_ids_from_room(updated)
     |> Enum.frequencies
-    |> Enum.map(fn {k,v} ->  if v == 1, do: true, else: false  end)
+    |> Enum.map(fn {_k,v} ->  if v == 1, do: true, else: false  end)
     |> Enum.all?()
     assert uniq? == true
+  end
+
+  test "add users with wrong admin id type" do
+    {:ok, room} = create_room()
+    {:error, result} = ChatService.add_users(Integer.to_string(valid_user().id), [1990, 1899], room.id)
+    assert result == "Wrong input data types"
+  end
+
+  test "add users with wrong list ids type" do
+    {:ok, room} = create_room()
+    {:error, result} = ChatService.add_users(valid_user().id, {1990, 1899}, room.id)
+    assert result == "Wrong input data types"
+  end
+
+  test "add users with wrong room id type" do
+    {:ok, room} = create_room()
+    {:error, result} = ChatService.add_users(valid_user().id, [1990, 1899], Integer.to_string(room.id))
+    assert result == "Wrong input data types"
+  end
+
+  test "add users with all wrong args type" do
+    {:ok, room} = create_room()
+    {:error, result} = ChatService.add_users(Integer.to_string(valid_user().id), {1990, 1899}, Integer.to_string(room.id))
+    assert result == "Wrong input data types"
   end
 
 end
