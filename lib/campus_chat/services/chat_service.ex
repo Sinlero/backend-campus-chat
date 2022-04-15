@@ -20,6 +20,10 @@ defmodule CampusChat.ChatService do
     end
   end
 
+  def create_dialog(_first_id, _second_id) do
+    wrong_input_data_type()
+  end
+
   def create_chat_group(creator_id, list_ids, group_name) when is_integer(creator_id)
                                                            and is_list(list_ids)
                                                            and is_binary(group_name) do
@@ -37,6 +41,10 @@ defmodule CampusChat.ChatService do
       {:error, changeset} -> changeset
       _ -> Logger.error("Chat wasn't created")
     end
+  end
+
+  def create_chat_group(_creator_id, _list_ids, _group_name) do
+    wrong_input_data_type()
   end
 
   def add_users(admin_id, list_ids, room_id) when is_integer(admin_id)
@@ -57,18 +65,34 @@ defmodule CampusChat.ChatService do
     end
   end
 
+  def add_users(_admin_id, _list_ids, _room_id) do
+    wrong_input_data_type()
+  end
+
   def get_chats(user_id) when is_integer(user_id) do
     with true <- user_exist?(user_id) do
             ChatQuery.get_rooms_of_user(user_id)
     end
   end
 
+  def get_chats(_user_id) do
+    wrong_input_data_type()
+  end
+
   def get_messages(room_id) when is_integer(room_id) do
     ChatQuery.get_messages(room_id)
   end
 
+  def get_messages(_room_id) do
+    wrong_input_data_type()
+  end
+
   def preload_messages(start_message_id) when is_integer(start_message_id) do
     ChatQuery.preload_last_messages(start_message_id)
+  end
+
+  def preload_messages(_start_message_id) do
+    wrong_input_data_type()
   end
 
   def save_message(%{sender_id: sender_id, room_id: room_id, text: text}) when is_integer(sender_id)
@@ -91,6 +115,10 @@ defmodule CampusChat.ChatService do
     end
   end
 
+  def save_message(%{sender_id: _sender_id, room_id: _room_id, text: _text}) do
+    wrong_input_data_type()
+  end
+
   def change_room_name(admin_id, room_id, name) when is_integer(admin_id)
                                                  and is_integer(room_id)
                                                  and is_binary(name) do
@@ -99,6 +127,10 @@ defmodule CampusChat.ChatService do
     else
       {:error, reason} -> {:error, reason}
     end
+  end
+
+  def change_room_name(_admin_id, _room_id, _name) do
+    wrong_input_data_type()
   end
 
   def add_admin_role(admin_id, new_admins_ids, room_id) when is_integer(admin_id)
@@ -112,6 +144,10 @@ defmodule CampusChat.ChatService do
       false -> {:error, "User does not exist"}
       {:error, reason} -> {:error, reason}
     end
+  end
+
+  def add_admin_role(_admin_id, _new_admins_ids, _room_id) do
+    wrong_input_data_type()
   end
 
   defp check_admin_authority(user_id, room_id) do
