@@ -4,7 +4,8 @@ defmodule CampusChat.ChatService do
 
   alias CampusChat.{CampusQuery, ChatQuery, Repo, Room, UsersRoomsRoles, Role, Message}
 
-  def create_dialog(first_id, second_id) do
+  def create_dialog(first_id, second_id) when is_integer(first_id)
+                                          and is_integer(second_id) do
     with true <- user_exist?(first_id) && user_exist?(second_id),
          {:ok, room} <- Repo.insert(%Room{name: "Dialog between #{first_id} and #{second_id}"}),
          %Role{} = role <- Repo.get_by(Role, name: "USER"),
@@ -19,7 +20,9 @@ defmodule CampusChat.ChatService do
     end
   end
 
-  def create_chat_group(creator_id, list_ids, group_name) do
+  def create_chat_group(creator_id, list_ids, group_name) when is_integer(creator_id)
+                                                           and is_list(list_ids)
+                                                           and is_binary(group_name) do
     list_ids = List.delete(list_ids, creator_id)
     with true <- users_exists?(list_ids) && user_exist?(creator_id),
          {:ok, room} <- Repo.insert(%Room{name: group_name}),
@@ -36,7 +39,9 @@ defmodule CampusChat.ChatService do
     end
   end
 
-  def add_users(admin_id, list_ids, room_id) when is_integer(admin_id) and is_list(list_ids) and is_integer(room_id) do
+  def add_users(admin_id, list_ids, room_id) when is_integer(admin_id)
+                                              and is_list(list_ids)
+                                              and is_integer(room_id) do
     list_ids = List.delete(list_ids, admin_id)
     list_ids = Enum.uniq(list_ids)
     with {:ok, _user_id, room, _role} <- check_admin_authority(admin_id, room_id),
@@ -52,21 +57,23 @@ defmodule CampusChat.ChatService do
     end
   end
 
-  def get_chats(user_id) do
+  def get_chats(user_id) when is_integer(user_id) do
     with true <- user_exist?(user_id) do
             ChatQuery.get_rooms_of_user(user_id)
     end
   end
 
-  def get_messages(room_id) do
+  def get_messages(room_id) when is_integer(room_id) do
     ChatQuery.get_messages(room_id)
   end
 
-  def preload_messages(start_message_id) do
+  def preload_messages(start_message_id) when is_integer(start_message_id) do
     ChatQuery.preload_last_messages(start_message_id)
   end
 
-  def save_message(%{sender_id: sender_id, room_id: room_id, text: text}) do
+  def save_message(%{sender_id: sender_id, room_id: room_id, text: text}) when is_integer(sender_id)
+                                                                           and is_integer(room_id)
+                                                                           and is_binary(text) do
     with true <- user_exist?(sender_id),
          {:ok, room} <- room_exists?(room_id),
          {:ok, message} <- Repo.insert(%Message{room: room, sender_id: sender_id, text: text}) do
@@ -84,7 +91,9 @@ defmodule CampusChat.ChatService do
     end
   end
 
-  def change_room_name(admin_id, room_id, name) do
+  def change_room_name(admin_id, room_id, name) when is_integer(admin_id)
+                                                 and is_integer(room_id)
+                                                 and is_binary(name) do
     with {:ok, _admin_id, room, _role} <- check_admin_authority(admin_id, room_id) do
             Repo.update(Ecto.Changeset.change(room, name: name))
     else
@@ -92,7 +101,9 @@ defmodule CampusChat.ChatService do
     end
   end
 
-  def add_admin_role(admin_id, new_admins_ids, room_id) do
+  def add_admin_role(admin_id, new_admins_ids, room_id) when is_integer(admin_id)
+                                                         and is_list(new_admins_ids)
+                                                         and is_integer(room_id) do
     with {:ok, _admin_id, room, role} <- check_admin_authority(admin_id, room_id),
          true <- users_exists?(new_admins_ids) do
            Enum.map(new_admins_ids, fn id -> ChatQuery.update_role(id, role, room) end)
