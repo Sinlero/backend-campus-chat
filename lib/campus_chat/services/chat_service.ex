@@ -133,4 +133,8 @@ defmodule CampusChat.ChatService do
       _   -> true
     end
   end
+
+  defp wrong_input_data_type() do
+    {:error, "Wrong input data types"}
+  end
 end
