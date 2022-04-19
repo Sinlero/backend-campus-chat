@@ -297,4 +297,44 @@ defmodule CampusChat.ChatServiceTest do
     assert result == "Wrong input data types"
   end
 
+  # ------------------------------------ Delete users from chat group --------------------------------------------
+
+  test "delete user" do
+    {:ok, room} = create_room()
+    ChatQuery.delete_user_from_room(valid_user_id_for_chat_group(), room)
+    ids = ChatQuery.get_users_ids_from_room(room)
+    assert Enum.member?(ids, valid_user_id_for_chat_group()) == false
+  end
+
+  test "delete users" do
+    {:ok, room} = create_room()
+    {:ok, updated} = ChatService.delete_users(valid_user().id, valid_ids_for_chat(), room.id)
+    room_ids = ChatQuery.get_users_ids_from_room(updated)
+    assert room_ids == [valid_user().id]
+  end
+
+  test "delete users with wrong admin id type" do
+    {:ok, room} = create_room()
+    {:error, result} = ChatService.delete_users(Integer.to_string(valid_user().id), [1990, 1899], room.id)
+    assert result == "Wrong input data types"
+  end
+
+  test "delete users with wrong list ids type" do
+    {:ok, room} = create_room()
+    {:error, result} = ChatService.delete_users(valid_user().id, {1990, 1899}, room.id)
+    assert result == "Wrong input data types"
+  end
+
+  test "delete users with wrong room id type" do
+    {:ok, room} = create_room()
+    {:error, result} = ChatService.delete_users(valid_user().id, [1990, 1899], Integer.to_string(room.id))
+    assert result == "Wrong input data types"
+  end
+
+  test "delete users with all wrong args type" do
+    {:ok, room} = create_room()
+    {:error, result} = ChatService.delete_users(Integer.to_string(valid_user().id), {1990, 1899}, Integer.to_string(room.id))
+    assert result == "Wrong input data types"
+  end
+
 end
