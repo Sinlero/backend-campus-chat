@@ -53,4 +53,10 @@ defmodule CampusChat.ChatQuery do
     Enum.map(users_list, fn user -> user.user_id end)
   end
 
+  def delete_user_from_room(user_id, room) do
+    from(record in UsersRoomsRoles, where: record.user_id == ^user_id and record.room_id == ^room.id)
+    |> Repo.one()
+    |> Repo.delete()
+  end
+
 end
