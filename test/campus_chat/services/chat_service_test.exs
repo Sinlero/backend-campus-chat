@@ -201,8 +201,12 @@ defmodule CampusChat.ChatServiceTest do
 
   test "add admin authorites" do
     {:ok, room} = create_room()
-    {:ok, result} = ChatService.add_admin_role(valid_user().id, valid_ids_for_chat(), room.id)
-    assert result == "Roles updated"
+    {:ok, _result} = ChatService.add_admin_role(valid_user().id, valid_ids_for_chat(), room.id)
+    all_admins? = Repo.get(CampusChat.Room, room.id)
+    |> Repo.preload(:users)
+    |> Map.get(:users)
+    |> Enum.reduce(true, fn usr, acc -> if(usr.role_id != 1, do: false, else: acc) end)
+    assert all_admins? == true
   end
 
   test "add admin roles with user without authorities" do
