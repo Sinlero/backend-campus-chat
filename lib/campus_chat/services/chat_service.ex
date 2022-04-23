@@ -27,7 +27,7 @@ defmodule CampusChat.ChatService do
   def create_chat_group(creator_id, list_ids, group_name) when is_integer(creator_id)
                                                            and is_list(list_ids)
                                                            and is_binary(group_name) do
-    list_ids = List.delete(list_ids, creator_id)
+    list_ids = clear_input_ids(creator_id, list_ids)
     with true <- users_exists?(list_ids) && user_exist?(creator_id),
          {:ok, room} <- Repo.insert(%Room{name: group_name}),
          %Role{} = user_role <- Repo.get_by(Role, name: "USER"),
@@ -50,8 +50,7 @@ defmodule CampusChat.ChatService do
   def add_users(admin_id, list_ids, room_id) when is_integer(admin_id)
                                               and is_list(list_ids)
                                               and is_integer(room_id) do
-    list_ids = List.delete(list_ids, admin_id)
-    list_ids = Enum.uniq(list_ids)
+    list_ids = clear_input_ids(admin_id, list_ids)
     with {:ok, _user_id, room, _role} <- check_admin_authority(admin_id, room_id),
           true <- users_exists?(list_ids),
           %Role{} = user_role <- Repo.get_by(Role, name: "USER") do
@@ -72,8 +71,7 @@ defmodule CampusChat.ChatService do
   def delete_users(admin_id, list_ids, room_id) when is_integer(admin_id)
                                                 and is_list(list_ids)
                                                 and is_integer(room_id) do
-    list_ids = List.delete(list_ids, admin_id)
-    list_ids = Enum.uniq(list_ids)
+    list_ids = clear_input_ids(admin_id, list_ids)
     with {:ok, _user_id, room, _role} <- check_admin_authority(admin_id, room_id),
           true <- users_exists?(list_ids) do
             room_users_ids = ChatQuery.get_users_ids_from_room(room)
@@ -156,6 +154,7 @@ defmodule CampusChat.ChatService do
   def add_admin_role(admin_id, new_admins_ids, room_id) when is_integer(admin_id)
                                                          and is_list(new_admins_ids)
                                                          and is_integer(room_id) do
+    new_admins_ids = clear_input_ids(admin_id, new_admins_ids)
     with {:ok, _admin_id, room, role} <- check_admin_authority(admin_id, room_id),
          true <- users_exists?(new_admins_ids) do
            Enum.map(new_admins_ids, fn id -> ChatQuery.update_role(id, role, room) end)
@@ -199,6 +198,10 @@ defmodule CampusChat.ChatService do
       nil -> false
       _   -> true
     end
+  end
+
+  defp clear_input_ids(admin_id, list_id) do
+    List.delete(list_id, admin_id) |> Enum.uniq()
   end
 
   defp wrong_input_data_type() do
