@@ -158,7 +158,7 @@ defmodule CampusChat.ChatService do
     with {:ok, _admin_id, room, role} <- check_admin_authority(admin_id, room_id),
          true <- users_exists?(new_admins_ids) do
            Enum.map(new_admins_ids, fn id -> ChatQuery.update_role(id, role, room) end)
-           {:ok, "Roles updated"}
+           {:ok, room}
     else
       false -> {:error, "User does not exist"}
       {:error, reason} -> {:error, reason}
