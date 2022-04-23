@@ -169,6 +169,26 @@ defmodule CampusChat.ChatService do
     wrong_input_data_type()
   end
 
+  def remove_admin_role(admin_id, removed_ids, room_id) when is_integer(admin_id)
+                                                           and is_list(removed_ids)
+                                                           and is_integer(room_id) do
+    removed_ids = clear_input_ids(admin_id, removed_ids)
+    with {:ok, _admin_id, room, _role} <- check_admin_authority(admin_id, room_id),
+         %Role{} = user_role <- Repo.get_by(Role, name: "USER"),
+         true <- users_exists?(removed_ids) do
+           Enum.map(removed_ids, fn id -> ChatQuery.update_role(id, user_role, room) end)
+           {:ok, room}
+    else
+      false -> {:error, "User does not exist"}
+      nil -> {:error, "No such role"}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  def remove_admin_role(_admin_id, _new_admins_ids, _room_id) do
+    wrong_input_data_type()
+  end
+
   defp check_admin_authority(user_id, room_id) do
     with true <- user_exist?(user_id),
          {:ok, room} <- room_exists?(room_id),
