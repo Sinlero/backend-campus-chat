@@ -257,6 +257,69 @@ defmodule CampusChat.ChatServiceTest do
     assert result == "Wrong input data types"
   end
 
+  # -------------------------- Remove admin authorities tests ------------------------------------
+
+  def create_room_with_admins() do
+    {:ok, room} = create_room()
+    ChatService.add_admin_role(valid_user().id, valid_ids_for_chat(), room.id)
+  end
+
+  test "remove admin authorites" do
+    {:ok, room} = create_room_with_admins()
+    {:ok, result} = ChatService.remove_admin_role(valid_user().id, valid_ids_for_chat(), room.id)
+    count_users = result |> Repo.preload(:users) |> Map.get(:users) |> Enum.reduce(0, fn usr, acc -> if(usr.role_id == 2, do: acc + 1, else: acc) end)
+    assert count_users == 2
+  end
+
+  test "remove admin roles with user without authorities" do
+    {:ok, room} = create_room_with_admins()
+    ChatService.add_users(valid_user().id, [1990], room.id)
+    {:error, result} = ChatService.remove_admin_role(1990, valid_ids_for_chat(), room.id)
+    assert result == "User have no admin authority"
+  end
+
+  test "remove admin authorites to unexisted room" do
+    {:ok, _room} = create_room_with_admins()
+    {:error, result} = ChatService.remove_admin_role(valid_user().id, valid_ids_for_chat(), -213)
+    assert result == "User or room does not exist"
+  end
+
+  test "remove admin roles with unexisted admin user" do
+    {:ok, room} = create_room_with_admins()
+    {:error, result} = ChatService.remove_admin_role(-123, valid_ids_for_chat(), room.id)
+    assert result == "User or room does not exist"
+  end
+
+  test "remove admin roles with unexisted users" do
+    {:ok, room} = create_room_with_admins()
+    {:error, result} = ChatService.remove_admin_role(valid_user().id, [-123, valid_user_id_for_chat_group()], room.id)
+    assert result == "User does not exist"
+  end
+
+  test "remove admin roles with wrong admin id type" do
+    {:ok, room} = create_room_with_admins()
+    {:error, result} = ChatService.remove_admin_role(Integer.to_string(valid_user().id), valid_ids_for_chat(), room.id)
+    assert result == "Wrong input data types"
+  end
+
+  test "remove admin roles with wrong room id type" do
+    {:ok, room} = create_room_with_admins()
+    {:error, result} = ChatService.remove_admin_role(valid_user().id, valid_ids_for_chat(), Integer.to_string(room.id))
+    assert result == "Wrong input data types"
+  end
+
+  test "remove admin roles with wrong users ids type" do
+    {:ok, room} = create_room_with_admins()
+    {:error, result} = ChatService.remove_admin_role(valid_user().id, {valid_dialog_user_id(), valid_user_id_for_chat_group()}, room.id)
+    assert result == "Wrong input data types"
+  end
+
+  test "remove admin roles with multiply wrong args types" do
+    {:ok, room} = create_room_with_admins()
+    {:error, result} = ChatService.remove_admin_role(Integer.to_string(valid_user().id), {valid_dialog_user_id(), valid_user_id_for_chat_group()}, room.id)
+    assert result == "Wrong input data types"
+  end
+
   # -------------------------- Add users to chat tests ------------------------------------
 
   test "add users to group" do
