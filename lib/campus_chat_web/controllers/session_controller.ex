@@ -26,7 +26,7 @@ defmodule CampusChatWeb.SessionController do
   def create(conn, _params) do
     with {login, password} <- Plug.BasicAuth.parse_basic_auth(conn),
            %CampusChat.User{} = user <- CampusQuery.get_user_by_login_and_password(login, password) do
-          AuthenticationService.log_in_user(conn, user, %{login: login, password: password})
+          AuthenticationService.log_in_user(conn, user, %{login: login, password: password}) |> json(CampusChat.User.transfer_cast(user))
     else
       _ -> conn |> send_resp(403, "Forbidden") |> halt()
     end
