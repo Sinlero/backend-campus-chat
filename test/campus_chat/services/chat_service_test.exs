@@ -64,49 +64,49 @@ defmodule CampusChat.ChatServiceTest do
 
   test "send message into dialog" do
     {:ok, room} = ChatService.create_dialog(valid_user().id, valid_dialog_user_id())
-    message = ChatService.save_message(%{sender_id: valid_user().id, room_id: room.id, text: "Hello Alexey"})
+    {:ok, message} = ChatService.save_message(valid_user().id, room.id, "Hello Alexey")
     assert message.text == "Hello Alexey"
   end
 
   test "send message into dialog with unexisted user" do
     {:ok, room} = ChatService.create_dialog(valid_user().id, valid_dialog_user_id())
-    {:error, reason} = ChatService.save_message(%{sender_id: -123123, room_id: room.id, text: "Hello Alexey"})
+    {:error, reason} = ChatService.save_message(-123123, room.id, "Hello Alexey")
     assert reason == "Sender or room does not exist"
   end
 
   test "send message into dialog with unexisted room" do
     {:ok, _room} = ChatService.create_dialog(valid_user().id, valid_dialog_user_id())
-    {:error, reason} = ChatService.save_message(%{sender_id: valid_user().id, room_id: -123445, text: "Hello Alexey"})
+    {:error, reason} = ChatService.save_message(valid_user().id, -123445, "Hello Alexey")
     assert reason == "Sender or room does not exist"
   end
 
   test "send message into chat room" do
     {:ok, room} = create_room()
-    message = ChatService.save_message(%{sender_id: valid_user().id, room_id: room.id, text: "Hello All"})
+    {:ok, message} = ChatService.save_message(valid_user().id, room.id, "Hello All")
     assert message.text == "Hello All"
   end
 
   test "send message with wrong sender id type" do
     {:ok, room} = create_room()
-    {:error, reason} = ChatService.save_message(%{sender_id: Integer.to_string(valid_user().id), room_id: room.id, text: "Hello All"})
+    {:error, reason} = ChatService.save_message(Integer.to_string(valid_user().id), room.id, "Hello All")
     assert reason == "Wrong input data types"
   end
 
   test "send message with wrong room id type" do
     {:ok, room} = create_room()
-    {:error, reason} = ChatService.save_message(%{sender_id: valid_user().id, room_id: Integer.to_string(room.id), text: "Hello All"})
+    {:error, reason} = ChatService.save_message(valid_user().id, Integer.to_string(room.id), "Hello All")
     assert reason == "Wrong input data types"
   end
 
   test "send message with wrong text type" do
     {:ok, room} = create_room()
-    {:error, reason} = ChatService.save_message(%{sender_id: valid_user().id, room_id: room.id, text: 25753768})
+    {:error, reason} = ChatService.save_message(valid_user().id, room.id, 25753768)
     assert reason == "Wrong input data types"
   end
 
   test "send message with multiply wrong types" do
     {:ok, room} = create_room()
-    {:error, reason} = ChatService.save_message(%{sender_id: Integer.to_string(valid_user().id), room_id: room.id, text: [123, "235", "dfgs"]})
+    {:error, reason} = ChatService.save_message(Integer.to_string(valid_user().id), room.id, [123, "235", "dfgs"])
     assert reason == "Wrong input data types"
   end
 
@@ -130,18 +130,16 @@ defmodule CampusChat.ChatServiceTest do
 
   test "get messages from room" do
     {:ok, room} = create_room()
-    message = %{room_id: room.id, sender_id: valid_user().id, text: "DEFAULT TEXT"}
     for _i <- 1..100 do
-      ChatService.save_message(message)
+      ChatService.save_message(valid_user().id, room.id, "DEFAULT TEXT")
     end
     assert ChatService.get_messages(room.id) |> Enum.count() == 30
   end
 
   test "get messages from room with wrong room id type" do
     {:ok, room} = create_room()
-    message = %{room_id: room.id, sender_id: valid_user().id, text: "DEFAULT TEXT"}
     for _i <- 1..100 do
-      ChatService.save_message(message)
+      ChatService.save_message(valid_user().id, room.id, "DEFAULT TEXT")
     end
     {:error, reason} = ChatService.get_messages(Integer.to_string(room.id))
     assert reason == "Wrong input data types"
