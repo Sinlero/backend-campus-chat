@@ -1,6 +1,8 @@
 defmodule CampusChatWeb.RoomChannel do
   use CampusChatWeb, :channel
 
+  alias CampusChat.{ChatService}
+
   # @impl true
   # def join("room:lobby", payload, socket) do
   #   if authorized?(payload) do
@@ -47,8 +49,11 @@ defmodule CampusChatWeb.RoomChannel do
 
   @impl true
   def handle_in("new_msg", %{"room_id" => room_id, "sender_id" => sender_id, "text" => text}, socket) do
-    broadcast!(socket, "new_msg", %{"room_id" => room_id, "sender_id" => sender_id, "text" => text})
-    {:noreply, socket}
+    result = ChatService.save_message(sender_id, room_id, text)
+    case result do
+      {:ok, message} -> broadcast!(socket, "new_msg", message)
+    end
+    {:reply, result, socket}
   end
 
   # Add authorization logic here as required.
