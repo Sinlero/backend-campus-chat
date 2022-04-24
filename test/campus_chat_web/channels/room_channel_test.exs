@@ -28,8 +28,16 @@ defmodule CampusChatWeb.RoomChannelTest do
   end
 
   test "send message to room:lobby", %{socket: socket} do
-    message = %{"room_id" => 1, "sender_id" => valid_user_id_for_chat_group(), "text" => "Hello world"}
+    {:ok, room} = CampusChat.ChatService.create_chat_group(valid_user().id, valid_ids_for_chat(), "Test Chat Group")
+    message = %{"room_id" => room.id, "sender_id" => valid_user().id, "text" => "Hello world"}
     push socket, "new_msg", message
-    assert_broadcast "new_msg", ^message
+    assert_broadcast "new_msg", %{
+      id: _,
+      room_id: _,
+      room_name: _,
+      sender_id: _,
+      text: _,
+      time: _
+    }
   end
 end
