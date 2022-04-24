@@ -10,7 +10,8 @@ defmodule CampusChatWeb.SessionControllerTest do
 
   test "login" do
     conn = logined_session()
-    assert conn.resp_body =~ "loggined"
+    response = json_response(conn, 200)
+    assert Map.get(response, "id") == valid_user().id
   end
 
   test "wrong login and password" do
