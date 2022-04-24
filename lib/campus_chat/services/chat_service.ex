@@ -113,13 +113,13 @@ defmodule CampusChat.ChatService do
     wrong_input_data_type()
   end
 
-  def save_message(%{sender_id: sender_id, room_id: room_id, text: text}) when is_integer(sender_id)
-                                                                           and is_integer(room_id)
-                                                                           and is_binary(text) do
+  def save_message(sender_id, room_id, text) when is_integer(sender_id)
+                                              and is_integer(room_id)
+                                              and is_binary(text) do
     with true <- user_exist?(sender_id),
          {:ok, room} <- room_exists?(room_id),
          {:ok, message} <- Repo.insert(%Message{room: room, sender_id: sender_id, text: text}) do
-           %{
+           saved = %{
               id:        message.id,
               sender_id: message.sender_id,
               text:      message.text,
@@ -127,13 +127,14 @@ defmodule CampusChat.ChatService do
               room_name: room.name,
               time:      message.inserted_at
           }
+          {:ok, saved}
     else
       false -> {:error, "Sender or room does not exist"}
       _ -> Logger.error("Message wasn't saved")
     end
   end
 
-  def save_message(%{sender_id: _sender_id, room_id: _room_id, text: _text}) do
+  def save_message(_sender_id, _room_id, _text) do
     wrong_input_data_type()
   end
 
