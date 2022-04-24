@@ -11,4 +11,12 @@ defmodule CampusChatWeb.ChatController do
     end
   end
 
+  def group(conn, %{"id" => creator_id, "users" => list_ids, "name" => group_name}) do
+    result = ChatService.create_chat_group(creator_id, list_ids, group_name)
+    case result do
+      {:ok, room}     -> json(conn, %{id: room.id})  |> halt()
+      {:error, error} -> send_resp(conn, 404, error) |> halt()
+    end
+  end
+
 end
