@@ -29,6 +29,7 @@ defmodule CampusChatWeb.Router do
     get "/users/category/:id",                             SearchController,  :users_of_category
     post "/chat/dialog",                                   ChatController,    :dialog
     post "/chat/group",                                    ChatController,    :group
+    get "/chat/rooms",                                     ChatController,    :rooms
   end
 
   scope "#{@api_prefix}/swagger" do
