@@ -89,7 +89,11 @@ defmodule CampusChat.ChatService do
 
   def get_chats(user_id) when is_integer(user_id) do
     with true <- user_exist?(user_id) do
-            ChatQuery.get_rooms_of_user(user_id)
+            result = ChatQuery.get_rooms_of_user(user_id) |> Enum.map(fn room -> %{id: room.id, name: room.name} end)
+            {:ok, result}
+    else
+        false -> {:error, "User does not exist"}
+        {:error, reason} -> {:error, reason}
     end
   end
 
