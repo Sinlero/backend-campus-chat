@@ -19,4 +19,13 @@ defmodule CampusChatWeb.ChatController do
     end
   end
 
+  def rooms(conn, _params) do
+    %{current_user: user} = conn.assigns
+    result = ChatService.get_chats(user.id)
+    case result do
+      {:ok, rooms} -> json(conn, rooms) |> halt()
+      {:error, error} -> send_resp(conn, 404, error) |> halt()
+    end
+  end
+
 end
