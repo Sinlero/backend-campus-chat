@@ -123,8 +123,8 @@ defmodule CampusChat.ChatService do
     wrong_input_data_type()
   end
 
-  def preload_messages(start_message_id) when is_integer(start_message_id) do
-    ChatQuery.preload_last_messages(start_message_id)
+  def preload_messages(room_id, start_message_id) when is_integer(start_message_id) do
+    ChatQuery.preload_last_messages(room_id, start_message_id)
   end
 
   def preload_messages(_start_message_id) do
