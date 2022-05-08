@@ -17,4 +17,13 @@ defmodule CampusChat.Message do
     |> validate_required([:sender_id, :text])
   end
 
+  def transfer_cast(message) do
+    %{
+      id: message.id,
+      sender_id: message.sender_id,
+      text: message.text,
+      time: message.inserted_at
+    }
+  end
+
 end
