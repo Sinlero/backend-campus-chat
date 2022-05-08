@@ -27,12 +27,12 @@ defmodule CampusChat.ChatQuery do
       nil
     else
       last_message = messages |> Enum.max_by(fn message -> message.id end)
-      preload_last_messages(last_message.id)
+      preload_last_messages(room_id, last_message.id)
     end
   end
 
-  def preload_last_messages(message_id) do
-    from(msg in Message, where: msg.id <= ^message_id, limit: 30, order_by: [desc: msg.id]) |> Repo.all()
+  def preload_last_messages(room_id, message_id) do
+    from(msg in Message, where: msg.id <= ^message_id and msg.room_id == ^room_id, limit: 30, order_by: [desc: msg.id]) |> Repo.all()
   end
 
   def get_authority(user_id, room_id) do
