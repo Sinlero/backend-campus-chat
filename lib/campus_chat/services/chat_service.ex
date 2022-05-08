@@ -2,7 +2,7 @@ defmodule CampusChat.ChatService do
 
   require Logger
 
-  alias CampusChat.{CampusQuery, ChatQuery, Repo, Room, UsersRoomsRoles, Role, Message}
+  alias CampusChat.{CampusQuery, ChatQuery, Repo, Room, User, UsersRoomsRoles, Role, Message}
 
   def create_dialog(first_id, second_id) when is_integer(first_id)
                                           and is_integer(second_id) do
@@ -89,8 +89,14 @@ defmodule CampusChat.ChatService do
 
   def get_chats(user_id) when is_integer(user_id) do
     with true <- user_exist?(user_id) do
-            result = ChatQuery.get_rooms_of_user(user_id) |> Enum.map(fn room -> %{id: room.id, name: room.name} end)
-            {:ok, result}
+            rooms = ChatQuery.get_rooms_of_user(user_id)
+            rooms = Enum.map(rooms, fn room -> %{id: room.id,
+                                        name: room.name,
+                                        users: Enum.map(ChatQuery.get_users_from_room(room), fn user -> User.transfer_cast(user) end),
+                                        messages: ChatQuery.get_messages(room.id) |> format_messages()
+                                        }
+                                      end)
+            {:ok, rooms}
     else
         false -> {:error, "User does not exist"}
         {:error, reason} -> {:error, reason}
@@ -99,6 +105,14 @@ defmodule CampusChat.ChatService do
 
   def get_chats(_user_id) do
     wrong_input_data_type()
+  end
+
+  defp format_messages(list) when is_nil(list) do
+    nil
+  end
+
+  defp format_messages(list) when is_list(list) do
+    Enum.map(list, fn msg -> Message.transfer_cast(msg) end)
   end
 
   def get_messages(room_id) when is_integer(room_id) do

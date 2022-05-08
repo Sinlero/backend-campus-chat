@@ -23,8 +23,12 @@ defmodule CampusChat.ChatQuery do
 
   def get_messages(room_id) do
     {:ok, messages} = Repo.get(Room, room_id) |> Repo.preload(:messages) |> Map.fetch(:messages)
-    last_message = messages |> Enum.max_by(fn message -> message.id end)
-    preload_last_messages(last_message.id)
+    if Enum.empty?(messages) do
+      nil
+    else
+      last_message = messages |> Enum.max_by(fn message -> message.id end)
+      preload_last_messages(last_message.id)
+    end
   end
 
   def preload_last_messages(message_id) do
