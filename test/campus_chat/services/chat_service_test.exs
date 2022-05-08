@@ -113,10 +113,18 @@ defmodule CampusChat.ChatServiceTest do
   # -------------------------- Get chats tests ------------------------------------
 
   test "get rooms of user" do
-    {:ok, _room} = create_room("ROOM 1")
+    {:ok, room} = create_room("ROOM 1")
     {:ok, _room2} = create_room("ROOM 2")
-    count_chats = ChatService.get_chats(valid_user().id) |> Enum.count()
-    assert count_chats == 2
+    ChatService.save_message(valid_user().id, room.id, "Hello")
+    {:ok, chats} = ChatService.get_chats(valid_user().id)
+    assert Enum.count(chats) == 2
+  end
+
+  test "get rooms of user without messages" do
+    {:ok, room} = create_room("ROOMs 1")
+    {:ok, _room2} = create_room("ROOMs 2")
+    {:ok, chats} = ChatService.get_chats(valid_user().id)
+    assert Enum.count(chats) == 2
   end
 
   test "get rooms of user with wrong user id type" do
