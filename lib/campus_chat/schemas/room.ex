@@ -4,6 +4,7 @@ defmodule CampusChat.Room do
 
   schema "rooms" do
       field :name, :string
+      field :chat, :boolean
       has_many :messages, CampusChat.Message
       has_many :users, CampusChat.UsersRoomsRoles
   end

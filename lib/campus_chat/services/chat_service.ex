@@ -7,7 +7,7 @@ defmodule CampusChat.ChatService do
   def create_dialog(first_id, second_id) when is_integer(first_id)
                                           and is_integer(second_id) do
     with true <- user_exist?(first_id) && user_exist?(second_id),
-         {:ok, room} <- Repo.insert(%Room{name: "Dialog between #{first_id} and #{second_id}"}),
+         {:ok, room} <- Repo.insert(%Room{name: "Dialog between #{first_id} and #{second_id}", chat: false}),
          %Role{} = role <- Repo.get_by(Role, name: "USER"),
          {:ok, _first_user_room} <- Repo.insert(%UsersRoomsRoles{user_id: first_id, room: room, role: role}),
          {:ok, _second_user_room} <- Repo.insert(%UsersRoomsRoles{user_id: second_id, room: room, role: role}) do
@@ -29,7 +29,7 @@ defmodule CampusChat.ChatService do
                                                            and is_binary(group_name) do
     list_ids = clear_input_ids(creator_id, list_ids)
     with true <- users_exists?(list_ids) && user_exist?(creator_id),
-         {:ok, room} <- Repo.insert(%Room{name: group_name}),
+         {:ok, room} <- Repo.insert(%Room{name: group_name, chat: true}),
          %Role{} = user_role <- Repo.get_by(Role, name: "USER"),
          %Role{} = admin_role <- Repo.get_by(Role, name: "ADMIN"),
          {:ok, _admin_room} <- Repo.insert(%UsersRoomsRoles{user_id: creator_id, room: room, role: admin_role}) do
@@ -92,6 +92,7 @@ defmodule CampusChat.ChatService do
             rooms = ChatQuery.get_rooms_of_user(user_id)
             rooms = Enum.map(rooms, fn room -> %{id: room.id,
                                         name: room.name,
+                                        chat: room.chat,
                                         users: Enum.map(ChatQuery.get_users_from_room(room), fn user -> User.transfer_cast(user) end),
                                         messages: ChatQuery.get_messages(room.id) |> format_messages()
                                         }

@@ -4,6 +4,7 @@ defmodule CampusChat.Repo.Migrations.CreateRoom do
   def change do
     create table("rooms") do
       add :name, :string
+      add :chat, :boolean
     end
   end
 end
