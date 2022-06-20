@@ -7,7 +7,8 @@ defmodule CampusChatWeb.Endpoint do
   @session_options [
     store: :cookie,
     key: "campus_chat_key",
-    signing_salt: "vzdaEL79"
+    signing_salt: "vzdaEL79",
+    extra: "SameSite=None; Secure;"
   ]
 
   socket "/socket", CampusChatWeb.UserSocket,
